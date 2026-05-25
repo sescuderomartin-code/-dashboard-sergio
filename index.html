@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Sergio - Bloqueado Total</title>
+<style>
+:root{
+  --bg:#f4f7fb;--card:#fff;--text:#101827;--muted:#667085;--line:#dbe3ef;
+  --rv:#2563eb;--p2p:#e23b2e;--crypto:#f97316;--mp:#facc15;--bonos:#dc2626;--cash:#16a34a;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  overflow:auto;
+}
+#stage{
+  position:relative;
+  width:1500px;
+  height:1020px;
+  min-width:1500px;
+  min-height:1020px;
+  transform-origin:top left;
+}
+.card{
+  position:absolute;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 10px 24px rgba(15,23,42,.06);
+}
+.tab{
+  position:absolute;
+  top:22px;
+  width:170px;
+  height:86px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fff;
+  color:#101827;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-size:20px;
+  line-height:1.08;
+  font-weight:950;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(15,23,42,.04);
+}
+.tab.active{background:#101827;color:#fff;border-color:#101827}
+.section{display:none}
+.section.active{display:block}
+.label{color:#667085;font-size:15px;font-weight:950;letter-spacing:.06em;text-transform:uppercase}
+.value{font-size:40px;line-height:1;font-weight:950;letter-spacing:-.04em;margin-top:18px;white-space:nowrap}
+.sub{color:var(--muted);font-size:16px;line-height:1.35;margin-top:16px}
+.kpi{top:140px;width:351px;height:160px;padding:24px}
+h2{margin:0;font-size:27px;letter-spacing:-.035em}
+.donut{
+  position:absolute;left:35px;top:88px;width:320px;height:320px;border-radius:50%;
+  box-shadow:0 16px 32px rgba(15,23,42,.10);
+  background:conic-gradient(var(--rv) 0% var(--pct-rv,30.84%),var(--p2p) var(--pct-rv,30.84%) var(--pct-p2p-end,80.06%),var(--crypto) var(--pct-p2p-end,80.06%) var(--pct-crypto-end,87.24%),var(--mp) var(--pct-crypto-end,87.24%) var(--pct-mp-end,96.16%),var(--bonos) var(--pct-mp-end,96.16%) var(--pct-bonos-end,97.67%),var(--cash) var(--pct-bonos-end,97.67%) 100%);
+}
+.donut:after{content:"";position:absolute;inset:98px;background:#fff;border-radius:50%;z-index:1}
+.donut-center{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;font-size:25px;font-weight:950}
+.donut-center small{font-size:15px;color:var(--muted);font-weight:800;margin-top:5px}
+.slice-label{position:absolute;z-index:3;transform:translate(-50%,-50%);color:#fff;font-weight:950;font-size:18px;text-shadow:0 2px 5px rgba(0,0,0,.35)}
+.slice-label.dark{color:#101827;text-shadow:0 1px 3px rgba(255,255,255,.75)}
+.legend-row{position:absolute;left:385px;width:260px;height:38px;display:grid;grid-template-columns:20px 1fr 105px;gap:10px;align-items:center}
+.dot{width:16px;height:16px;border-radius:50%}
+.asset{font-size:17px}.amount{text-align:right;font-size:17px;font-weight:850}
+.total-row{position:absolute;left:385px;top:380px;width:260px;border-top:2px solid var(--line);padding-top:14px;display:grid;grid-template-columns:1fr 105px;gap:10px;font-size:17px;font-weight:950}
+.date{position:absolute;left:0;bottom:20px;width:670px;text-align:center;color:var(--muted);font-size:16px}
+.period{position:absolute;top:42px;width:52px;height:36px;border-radius:10px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;background:#fff}
+.period.active{background:#101827;color:#fff;border-color:#101827}
+svg{position:absolute;left:24px;top:86px;width:724px;height:330px}
+svg text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;fill:#101827;font-size:15px}
+.gridline{stroke:#e5e7eb;stroke-width:1}.axis{stroke:#cbd5e1;stroke-width:2}.area{fill:rgba(37,99,235,.13)}.line{fill:none;stroke:#2563eb;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}.point{fill:#fff;stroke:#2563eb;stroke-width:4}
+.note{position:absolute;left:24px;bottom:24px;color:#2563eb;background:#eef4ff;border:1px solid #bcd0ff;border-radius:10px;padding:10px 16px;font-size:17px;font-weight:950}
+.info-line{display:flex;align-items:center;gap:14px;font-size:18px;margin:15px 0}
+.round-icon{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:950}.red{background:#ef4444}.blue{background:#2563eb}.warning{color:#f59e0b;font-size:26px;width:28px;text-align:center}
+.page{position:absolute;left:20px;top:140px;width:1460px}
+.page-title{font-size:32px;font-weight:950;margin-bottom:8px}.hint{color:var(--muted);font-size:17px;margin-bottom:20px}
+.tablebox{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+table{width:100%;border-collapse:collapse}th,td{padding:12px 14px;border-bottom:1px solid var(--line);font-size:16px;text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left}th{background:#eef4ff;font-weight:950}.total{font-weight:950;color:#2563eb}
+.mini{position:absolute;width:351px;height:145px;padding:24px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+
+.money-input-v5{
+  width:130px !important;
+  min-width:110px !important;
+  height:42px !important;
+  border:2px solid #f59e0b !important;
+  border-radius:10px !important;
+  padding:6px 10px !important;
+  text-align:right !important;
+  font-size:18px !important;
+  font-weight:900 !important;
+  color:#101827 !important;
+  background:#fff7cc !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+}
+.money-input-v5:focus{
+  outline:none !important;
+  border-color:#2563eb !important;
+  background:#ffffff !important;
+  box-shadow:0 0 0 4px rgba(37,99,235,.20) !important;
+}
+.edit-toolbar{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin:0 0 18px 0;
+}
+.edit-toolbar button{
+  border:0;
+  border-radius:12px;
+  padding:12px 18px;
+  font-size:16px;
+  font-weight:950;
+  cursor:pointer;
+}
+.save-btn{background:#16a34a;color:white}
+.reset-btn{background:#dc2626;color:white}
+.status-pill{
+  background:#eef4ff;
+  color:#2563eb;
+  border:1px solid #bcd0ff;
+  border-radius:999px;
+  padding:10px 14px;
+  font-size:15px;
+  font-weight:900;
+}
+
+
+/* ===== AJUSTE DE ZOOM / VISTA COMPLETA ===== */
+html, body{
+  width:100%;
+  min-height:100%;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch;
+}
+body{
+  display:block;
+  margin:0;
+}
+#stage{
+  transform-origin: top left !important;
+  transition:none !important;
+}
+
+</style>
+</head>
+<body>
+<div id="stage">
+
+<button class="tab active" style="left:16px" data-sec="resumen">Resumen</button>
+<button class="tab" style="left:200px" data-sec="mensual">Evolución<br>mensual</button>
+<button class="tab" style="left:384px" data-sec="ingresos">Ingresos<br>pasivos</button>
+<button class="tab" style="left:568px" data-sec="distribucion">Distribución</button>
+<button class="tab" style="left:752px" data-sec="rv">Renta<br>variable</button>
+<button class="tab" style="left:936px" data-sec="p2p">P2P real</button>
+<button class="tab" style="left:1120px" data-sec="inmueble">Inmueble</button>
+<button class="tab" style="left:1304px" data-sec="calculadora">Calculadora</button>
+
+<section id="resumen" class="section active">
+  <div class="card kpi" style="left:20px"><div class="label">Patrimonio total</div><div class="value" id="kpiPatrimonioTotal">567.800 €</div><div class="sub">Incluye inmueble + efectivo</div></div>
+  <div class="card kpi" style="left:389px"><div class="label">Capital invertible</div><div class="value" id="kpiCapitalInvertible">257.800 €</div><div class="sub">RV + P2P + Cripto + Materias primas<br>+ Bonos + Efectivo</div></div>
+  <div class="card kpi" style="left:758px"><div class="label">Ingresos pasivos YTD</div><div class="value">27.516 €</div><div class="sub">Media mensual: 2.293 €</div></div>
+  <div class="card kpi" style="left:1127px"><div class="label">Ingreso mensual medio</div><div class="value">2.293 €</div><div class="sub">Media mensual YTD positiva</div></div>
+
+  <div class="card" style="left:20px;top:318px;width:670px;height:500px;padding:24px">
+    <h2>Asignación por subcategoría</h2>
+    <div class="donut">
+      <div class="donut-center"><span id="donutTotalInvertible">257.800 €</span><small>Total invertible</small></div>
+      <div class="slice-label" id="pctRV" style="left:76%;top:35%">30,84%</div>
+      <div class="slice-label" id="pctP2P" style="left:35%;top:79%">49,22%</div>
+      <div class="slice-label" id="pctCripto" style="left:16%;top:46%">7,18%</div>
+      <div class="slice-label dark" id="pctMP" style="left:26%;top:25%">8,92%</div>
+      <div class="slice-label dark" id="pctBonos" style="left:44%;top:13%">1,51%</div>
+      <div class="slice-label" id="pctCash" style="left:52%;top:12%">2,33%</div>
+    </div>
+    <div class="legend-row" style="top:88px"><span class="dot" style="background:var(--rv)"></span><span class="asset">Renta variable</span><span class="amount" id="legendRV">79.500 €</span></div>
+    <div class="legend-row" style="top:136px"><span class="dot" style="background:var(--p2p)"></span><span class="asset">P2P</span><span class="amount" id="legendP2P">126.900 €</span></div>
+    <div class="legend-row" style="top:184px"><span class="dot" style="background:var(--crypto)"></span><span class="asset">Criptomonedas</span><span class="amount" id="legendCripto">18.500 €</span></div>
+    <div class="legend-row" style="top:232px"><span class="dot" style="background:var(--mp)"></span><span class="asset">Materias primas</span><span class="amount" id="legendMP">23.000 €</span></div>
+    <div class="legend-row" style="top:280px"><span class="dot" style="background:var(--bonos)"></span><span class="asset">Bonos</span><span class="amount" id="legendBonos">3.900 €</span></div>
+    <div class="legend-row" style="top:328px"><span class="dot" style="background:var(--cash)"></span><span class="asset">Efectivo</span><span class="amount" id="legendCash">6.000 €</span></div>
+    <div class="total-row"><span>Total capital invertible</span><span id="legendTotalInvertible" style="text-align:right">257.800 €</span></div>
+    <div class="date">Datos a 23 de mayo de 2025</div>
+  </div>
+
+  <div class="card" style="left:708px;top:318px;width:772px;height:500px;padding:24px">
+    <h2>Patrimonio total + evolución</h2>
+    <span class="period active" style="right:246px">YTD</span><span class="period" style="right:184px">1A</span><span class="period" style="right:122px">3A</span><span class="period" style="right:60px">5A</span><span class="period" style="right:0">Todo</span>
+    <svg id="wealthSvg" viewBox="0 0 760 340" preserveAspectRatio="none">
+      <line class="gridline" x1="70" y1="35" x2="740" y2="35"/><line class="gridline" x1="70" y1="100" x2="740" y2="100"/><line class="gridline" x1="70" y1="165" x2="740" y2="165"/><line class="gridline" x1="70" y1="230" x2="740" y2="230"/><line class="gridline" x1="70" y1="295" x2="740" y2="295"/>
+      <text id="yLabel0" x="20" y="40">580.000</text><text id="yLabel1" x="20" y="105">570.000</text><text id="yLabel2" x="20" y="170">560.000</text><text id="yLabel3" x="20" y="235">550.000</text><text id="yLabel4" x="20" y="300">540.000</text>
+      <line class="axis" x1="70" y1="295" x2="740" y2="295"/><line class="axis" x1="70" y1="35" x2="70" y2="295"/>
+      <path class="area" id="wealthArea" d=""/>
+      <path class="line" id="wealthLine" d=""/>
+      <g id="wealthPoints"></g>
+      <text x="58" y="325">Ene</text><text x="119" y="325">Feb</text><text x="181" y="325">Mar</text><text x="244" y="325">Abr</text><text x="304" y="325">May</text><text x="365" y="325">Jun</text><text x="426" y="325">Jul</text><text x="487" y="325">Ago</text><text x="548" y="325">Sep</text><text x="609" y="325">Oct</text><text x="670" y="325">Nov</text><text x="730" y="325">Dic</text>
+    </svg>
+    <div class="note" id="evolucionYTD">Evolución YTD: +5,41% (+29.148 €)</div>
+  </div>
+
+  <div class="card" style="left:20px;top:836px;width:670px;height:160px;padding:24px">
+    <h2>Rebalanceo sugerido</h2>
+    <div class="info-line"><span class="round-icon red">↓</span>Sobreponderado: P2P</div>
+    <div class="info-line"><span class="round-icon blue">↑</span>Infraponderado: Renta variable</div>
+  </div>
+  <div class="card" style="left:708px;top:836px;width:772px;height:160px;padding:24px">
+    <h2>Alertas principales</h2>
+    <div id="alertasDinamicas"></div>
+  </div>
+</section>
+
+
+<section id="mensual" class="section">
+  <div class="page">
+    <div class="page-title">Evolución mensual EDITABLE</div>
+    <div class="hint">Si ves cajas amarillas, estás en la versión correcta. Toca cualquier importe, edítalo y pulsa Guardar.</div>
+
+    <div class="edit-toolbar">
+      <button class="save-btn" type="button" onclick="guardarTablaMensualV5()">💾 Guardar cambios</button>
+      <button class="reset-btn" type="button" onclick="resetTablaMensualV5()">↩️ Restaurar datos iniciales</button>
+      <span id="saveStatusV5" class="status-pill">Tabla editable activa</span>
+    </div>
+
+    <div class="tablebox">
+      <table id="tablaMensualV5">
+        <thead>
+          <tr>
+            <th>Mes</th>
+            <th>RV</th>
+            <th>P2P</th>
+            <th>Inmueble</th>
+            <th>Mat. primas</th>
+            <th>Cripto</th>
+            <th>Bonos</th>
+            <th>Efectivo</th>
+            <th class="total">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><b>Ene</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="0" data-col="0" value="70000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="0" data-col="1" value="119857"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="0" data-col="2" value="310000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="0" data-col="3" value="21000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="0" data-col="4" value="14000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="0" data-col="5" value="3795"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="0" data-col="6" value="0"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Feb</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="1" data-col="0" value="70800"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="1" data-col="1" value="120400"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="1" data-col="2" value="310000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="1" data-col="3" value="21200"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="1" data-col="4" value="14600"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="1" data-col="5" value="3800"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="1" data-col="6" value="5200"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Mar</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="2" data-col="0" value="71600"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="2" data-col="1" value="121000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="2" data-col="2" value="310000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="2" data-col="3" value="21450"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="2" data-col="4" value="13800"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="2" data-col="5" value="3810"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="2" data-col="6" value="4800"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Abr</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="3" data-col="0" value="72400"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="3" data-col="1" value="121650"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="3" data-col="2" value="310000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="3" data-col="3" value="21300"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="3" data-col="4" value="15100"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="3" data-col="5" value="3820"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="3" data-col="6" value="5100"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>May</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="4" data-col="0" value="73500"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="4" data-col="1" value="122250"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="4" data-col="2" value="310000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="4" data-col="3" value="21500"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="4" data-col="4" value="15800"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="4" data-col="5" value="3835"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="4" data-col="6" value="5000"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Jun</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="5" data-col="0" value="74200"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="5" data-col="1" value="122900"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="5" data-col="2" value="310000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="5" data-col="3" value="21800"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="5" data-col="4" value="16200"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="5" data-col="5" value="3840"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="5" data-col="6" value="5400"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Jul</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="6" data-col="0" value="75200"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="6" data-col="1" value="123500"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="6" data-col="2" value="310000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="6" data-col="3" value="22000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="6" data-col="4" value="15900"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="6" data-col="5" value="3850"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="6" data-col="6" value="5600"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Ago</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="7" data-col="0" value="76000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="7" data-col="1" value="124100"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="7" data-col="2" value="310000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="7" data-col="3" value="22200"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="7" data-col="4" value="16800"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="7" data-col="5" value="3860"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="7" data-col="6" value="5300"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Sep</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="8" data-col="0" value="76800"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="8" data-col="1" value="124800"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="8" data-col="2" value="310000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="8" data-col="3" value="22400"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="8" data-col="4" value="17400"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="8" data-col="5" value="3875"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="8" data-col="6" value="5500"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Oct</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="9" data-col="0" value="77500"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="9" data-col="1" value="125500"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="9" data-col="2" value="310000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="9" data-col="3" value="22650"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="9" data-col="4" value="18100"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="9" data-col="5" value="3880"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="9" data-col="6" value="5700"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Nov</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="10" data-col="0" value="78500"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="10" data-col="1" value="126200"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="10" data-col="2" value="310000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="10" data-col="3" value="22800"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="10" data-col="4" value="17600"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="10" data-col="5" value="3890"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="10" data-col="6" value="5900"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Dic</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="11" data-col="0" value="79500"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="11" data-col="1" value="126900"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="11" data-col="2" value="310000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="11" data-col="3" value="23000"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="11" data-col="4" value="18500"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="11" data-col="5" value="3900"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="11" data-col="6" value="6000"></td><td class="total row-total-v5">0 €</td></tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+
+<section id="ingresos" class="section"><div class="page"><div class="page-title">Ingresos pasivos</div><div class="hint">Crowdfunding, alquiler y dividendos.</div><div class="mini" style="left:0;top:90px"><div class="label">Total YTD</div><div class="value">27.516 €</div></div><div class="mini" style="left:369px;top:90px"><div class="label">Crowdfunding</div><div class="value">13.200 €</div></div><div class="mini" style="left:738px;top:90px"><div class="label">Alquiler</div><div class="value">13.176 €</div></div><div class="mini" style="left:1107px;top:90px"><div class="label">Dividendos</div><div class="value">1.140 €</div></div></div></section>
+<section id="distribucion" class="section"><div class="page"><div class="page-title">Distribución</div><div class="hint">Objetivo de cartera y desviaciones.</div><div class="tablebox"><p style="font-size:22px;font-weight:900">Capital invertible: 257.800 € · Objetivo RV: 50% · Objetivo P2P: 25%</p></div></div></section>
+<section id="rv" class="section"><div class="page"><div class="page-title">Renta variable</div><div class="tablebox"><p style="font-size:22px;font-weight:900">Valor RV: 79.500 € · Peso invertible: 30,84% · Objetivo: 50%</p></div></div></section>
+<section id="p2p" class="section"><div class="page"><div class="page-title">P2P real</div><div class="tablebox"><p style="font-size:22px;font-weight:900">Capital P2P: 126.900 € · Interés anual estimado: 16.740 € · Top 3: 55,70%</p></div></div></section>
+<section id="inmueble" class="section"><div class="page"><div class="page-title">Inmueble</div><div class="tablebox"><p style="font-size:22px;font-weight:900">Valor actual: 310.000 € · Compra: 240.000 € · Alquiler: 1.098 €/mes</p></div></div></section>
+<section id="calculadora" class="section"><div class="page"><div class="page-title">Calculadora</div><div class="tablebox"><p style="font-size:22px;font-weight:900">Capital aportado: 410.000 € · Capital futuro: 589.788 € · Ganancia: 179.788 €</p></div></div></section>
+
+</div>
+<script>
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.sec).classList.add('active');
+    window.scrollTo(0,0);
+  });
+});
+
+const TABLA_MENSUAL_V5_DEFAULTS = [
+[70000,119857,310000,21000,14000,3795,0],
+[70800,120400,310000,21200,14600,3800,5200],
+[71600,121000,310000,21450,13800,3810,4800],
+[72400,121650,310000,21300,15100,3820,5100],
+[73500,122250,310000,21500,15800,3835,5000],
+[74200,122900,310000,21800,16200,3840,5400],
+[75200,123500,310000,22000,15900,3850,5600],
+[76000,124100,310000,22200,16800,3860,5300],
+[76800,124800,310000,22400,17400,3875,5500],
+[77500,125500,310000,22650,18100,3880,5700],
+[78500,126200,310000,22800,17600,3890,5900],
+[79500,126900,310000,23000,18500,3900,6000]
+];
+
+function numberV5(x){
+  return Number(String(x).replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.')) || 0;
+}
+function fmtV5(x){
+  return new Intl.NumberFormat('es-ES', {maximumFractionDigits:0}).format(x);
+}
+function recalcularTablaMensualV5(){
+  const table = document.getElementById('tablaMensualV5');
+  if(!table) return;
+  table.querySelectorAll('tbody tr').forEach(row=>{
+    let total = 0;
+    row.querySelectorAll('.money-input-v5').forEach(input=>{
+      total += numberV5(input.value);
+    });
+    const totalCell = row.querySelector('.row-total-v5');
+    if(totalCell) totalCell.textContent = fmtV5(total) + ' €';
+  });
+}
+function guardarTablaMensualV5(){
+  const data = [];
+  document.querySelectorAll('#tablaMensualV5 tbody tr').forEach(row=>{
+    const rowData = [];
+    row.querySelectorAll('.money-input-v5').forEach(input=>{
+      const n = numberV5(input.value);
+      input.value = fmtV5(n);
+      rowData.push(n);
+    });
+    data.push(rowData);
+  });
+  localStorage.setItem('SERGIO_TABLA_MENSUAL_V5', JSON.stringify(data));
+  recalcularTablaMensualV5();
+  const status = document.getElementById('saveStatusV5');
+  if(status) status.textContent = '✅ Cambios guardados en este navegador';
+}
+function cargarTablaMensualV5(){
+  let data = TABLA_MENSUAL_V5_DEFAULTS;
+  try{
+    const saved = localStorage.getItem('SERGIO_TABLA_MENSUAL_V5');
+    if(saved) data = JSON.parse(saved);
+  }catch(e){}
+  document.querySelectorAll('#tablaMensualV5 tbody tr').forEach((row,r)=>{
+    row.querySelectorAll('.money-input-v5').forEach((input,c)=>{
+      input.value = fmtV5(data[r][c]);
+      input.addEventListener('focus', ()=>{
+        input.value = String(numberV5(input.value));
+        setTimeout(()=>input.select(), 0);
+      });
+      input.addEventListener('input', ()=>{
+        recalcularTablaMensualV5();
+        const status = document.getElementById('saveStatusV5');
+        if(status) status.textContent = 'Cambios sin guardar';
+      });
+      input.addEventListener('blur', ()=>{
+        input.value = fmtV5(numberV5(input.value));
+        recalcularTablaMensualV5();
+      });
+    });
+  });
+  recalcularTablaMensualV5();
+}
+function resetTablaMensualV5(){
+  localStorage.removeItem('SERGIO_TABLA_MENSUAL_V5');
+  cargarTablaMensualV5();
+  const status = document.getElementById('saveStatusV5');
+  if(status) status.textContent = 'Datos iniciales restaurados';
+}
+cargarTablaMensualV5();
+
+
+function actualizarResumenDesdeTabla(){
+  const table = document.getElementById('tablaMensualV5');
+  if(!table) return;
+
+  const rows = [...table.querySelectorAll('tbody tr')];
+  const data = rows.map(row => [...row.querySelectorAll('.money-input-v5')].map(input => numberV5(input.value)));
+
+  if(!data.length) return;
+
+  const last = data[data.length - 1];
+  const first = data[0];
+
+  const rv = last[0], p2p = last[1], inmueble = last[2], mp = last[3], cripto = last[4], bonos = last[5], cash = last[6];
+  const patrimonioTotal = rv + p2p + inmueble + mp + cripto + bonos + cash;
+  const capitalInvertible = rv + p2p + mp + cripto + bonos + cash;
+
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = value;
+  };
+
+  setText('kpiPatrimonioTotal', fmtV5(patrimonioTotal) + ' €');
+  setText('kpiCapitalInvertible', fmtV5(capitalInvertible) + ' €');
+  setText('donutTotalInvertible', fmtV5(capitalInvertible) + ' €');
+  setText('legendTotalInvertible', fmtV5(capitalInvertible) + ' €');
+
+  setText('legendRV', fmtV5(rv) + ' €');
+  setText('legendP2P', fmtV5(p2p) + ' €');
+  setText('legendCripto', fmtV5(cripto) + ' €');
+  setText('legendMP', fmtV5(mp) + ' €');
+  setText('legendBonos', fmtV5(bonos) + ' €');
+  setText('legendCash', fmtV5(cash) + ' €');
+
+  const pct = v => capitalInvertible > 0 ? (v / capitalInvertible * 100) : 0;
+  const pRV = pct(rv), pP2P = pct(p2p), pCripto = pct(cripto), pMP = pct(mp), pBonos = pct(bonos), pCash = pct(cash);
+
+  setText('pctRV', pRV.toFixed(2).replace('.', ',') + '%');
+  setText('pctP2P', pP2P.toFixed(2).replace('.', ',') + '%');
+  setText('pctCripto', pCripto.toFixed(2).replace('.', ',') + '%');
+  setText('pctMP', pMP.toFixed(2).replace('.', ',') + '%');
+  setText('pctBonos', pBonos.toFixed(2).replace('.', ',') + '%');
+  setText('pctCash', pCash.toFixed(2).replace('.', ',') + '%');
+
+  const donut = document.querySelector('.donut');
+  if(donut){
+    let a = pRV;
+    let b = a + pP2P;
+    let c = b + pCripto;
+    let d = c + pMP;
+    let e = d + pBonos;
+    donut.style.setProperty('--pct-rv', a + '%');
+    donut.style.setProperty('--pct-p2p-end', b + '%');
+    donut.style.setProperty('--pct-crypto-end', c + '%');
+    donut.style.setProperty('--pct-mp-end', d + '%');
+    donut.style.setProperty('--pct-bonos-end', e + '%');
+  }
+
+  const totals = data.map(r => r.reduce((a,b)=>a+b,0));
+  actualizarGraficoPatrimonio(totals);
+
+  const ytdAbs = totals[totals.length - 1] - totals[0];
+  const ytdPct = totals[0] ? (ytdAbs / totals[0] * 100) : 0;
+  setText('evolucionYTD', 'Evolución YTD: ' + 
+    (ytdPct >= 0 ? '+' : '') + ytdPct.toFixed(2).replace('.', ',') + 
+    '% (' + (ytdAbs >= 0 ? '+' : '') + fmtV5(ytdAbs) + ' €)'
+  );
+
+  actualizarAlertasDinamicas({rv,p2p,inmueble,mp,cripto,bonos,cash,capitalInvertible,patrimonioTotal,pRV,pP2P,pCripto,pMP,pBonos,pCash});
+}
+
+function actualizarGraficoPatrimonio(totals){
+  const line = document.getElementById('wealthLine');
+  const area = document.getElementById('wealthArea');
+  const pointsGroup = document.getElementById('wealthPoints');
+  if(!line || !area || !pointsGroup || !totals.length) return;
+
+  const min = Math.min(...totals);
+  const max = Math.max(...totals);
+  const pad = Math.max((max - min) * 0.12, 5000);
+  const yMin = min - pad;
+  const yMax = max + pad;
+
+  const x0 = 70, x1 = 740, yTop = 35, yBottom = 295;
+  const step = (x1 - x0) / (totals.length - 1 || 1);
+  const yOf = v => yBottom - ((v - yMin) / (yMax - yMin || 1)) * (yBottom - yTop);
+
+  const coords = totals.map((v,i)=>[x0 + i*step, yOf(v)]);
+  const dLine = coords.map((p,i)=> (i ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  line.setAttribute('d', dLine);
+  area.setAttribute('d', dLine + ` L ${x1},${yBottom} L ${x0},${yBottom} Z`);
+
+  pointsGroup.innerHTML = coords.map(([x,y])=>`<circle class="point" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6"/>`).join('');
+
+  for(let i=0;i<5;i++){
+    const label = document.getElementById('yLabel' + i);
+    if(label){
+      const val = yMax - ((yMax-yMin)/4)*i;
+      label.textContent = fmtV5(Math.round(val/1000)*1000);
+    }
+  }
+}
+
+function actualizarAlertasDinamicas(s){
+  const box = document.getElementById('alertasDinamicas');
+  if(!box) return;
+  const alerts = [];
+
+  if(s.pP2P > 40) alerts.push(`⚠ P2P sobreponderado: ${s.pP2P.toFixed(1).replace('.', ',')}% del capital invertible.`);
+  if(s.pRV < 35) alerts.push(`↑ Renta variable por debajo del objetivo: ${s.pRV.toFixed(1).replace('.', ',')}%.`);
+  if(s.pCash < 3) alerts.push(`⚠ Efectivo bajo: ${s.pCash.toFixed(1).replace('.', ',')}%.`);
+  if(s.pCash > 10) alerts.push(`ℹ Efectivo alto: puede haber capital parado.`);
+  if(s.pCripto > 12) alerts.push(`⚠ Cripto por encima del 12%: revisar volatilidad.`);
+  if(!alerts.length) alerts.push('✅ Cartera sin alertas críticas. Mantener seguimiento mensual.');
+
+  box.innerHTML = alerts.slice(0,2).map(t => `<div class="info-line"><span class="warning">${t.startsWith('✅') ? '✓' : '⚠'}</span>${t}</div>`).join('');
+}
+
+// Enlazar con funciones existentes
+const _oldRecalcularTablaMensualV5 = typeof recalcularTablaMensualV5 === 'function' ? recalcularTablaMensualV5 : null;
+if(_oldRecalcularTablaMensualV5){
+  recalcularTablaMensualV5 = function(){
+    _oldRecalcularTablaMensualV5();
+    actualizarResumenDesdeTabla();
+  }
+}
+
+const _oldGuardarTablaMensualV5 = typeof guardarTablaMensualV5 === 'function' ? guardarTablaMensualV5 : null;
+if(_oldGuardarTablaMensualV5){
+  guardarTablaMensualV5 = function(){
+    _oldGuardarTablaMensualV5();
+    actualizarResumenDesdeTabla();
+  }
+}
+
+setTimeout(actualizarResumenDesdeTabla, 100);
+
+
+/* ===== AUTOESCALADO PARA VER TODO EL DASHBOARD ===== */
+function ajustarZoomDashboard(){
+  const stage = document.getElementById('stage');
+  if(!stage) return;
+
+  const baseW = 1500;
+  const baseH = 1020;
+
+  const margenW = 16;
+  const margenH = 16;
+
+  const scaleW = (window.innerWidth - margenW) / baseW;
+
+  // Versión estable para iPad/Safari:
+  // ajusta al ancho y deja scroll vertical normal.
+  // Es más grande que la versión anterior y evita recalcular por altura.
+  const scale = Math.min(scaleW, 1);
+
+  stage.style.transform = `scale(${scale})`;
+  stage.style.width = baseW + 'px';
+  stage.style.height = baseH + 'px';
+
+  document.body.style.width = '100%';
+  document.body.style.minHeight = (baseH * scale + 40) + 'px';
+  document.documentElement.style.minHeight = (baseH * scale + 40) + 'px';
+}
+window.addEventListener('resize', ajustarZoomDashboard);
+window.addEventListener('orientationchange', ajustarZoomDashboard);
+setTimeout(ajustarZoomDashboard, 50);
+setTimeout(ajustarZoomDashboard, 500);
+
+</script>
+</body>
+</html>
