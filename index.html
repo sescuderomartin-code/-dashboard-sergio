@@ -1,0 +1,3147 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Sergio - Bloqueado Total</title>
+<style>
+:root{
+  --bg:#f4f7fb;--card:#fff;--text:#101827;--muted:#667085;--line:#dbe3ef;
+  --rv:#2563eb;--p2p:#e23b2e;--crypto:#f97316;--mp:#facc15;--bonos:#8b5cf6;--cash:#16a34a;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  overflow:auto;
+}
+#stage{
+  position:relative;
+  width:1500px;
+  height:1020px;
+  min-width:1500px;
+  min-height:1020px;
+  transform-origin:top left;
+}
+.card{
+  position:absolute;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 10px 24px rgba(15,23,42,.06);
+}
+.tab{
+  position:absolute;
+  top:22px;
+  width:170px;
+  height:86px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fff;
+  color:#101827;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-size:20px;
+  line-height:1.08;
+  font-weight:950;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(15,23,42,.04);
+}
+.tab.active{background:#101827;color:#fff;border-color:#101827}
+.section{display:none}
+.section.active{display:block}
+.label{color:#667085;font-size:15px;font-weight:950;letter-spacing:.06em;text-transform:uppercase}
+.value{font-size:40px;line-height:1;font-weight:950;letter-spacing:-.04em;margin-top:18px;white-space:nowrap}
+.sub{color:var(--muted);font-size:16px;line-height:1.35;margin-top:16px}
+.kpi{top:140px;width:351px;height:160px;padding:24px}
+h2{margin:0;font-size:27px;letter-spacing:-.035em}
+.donut{
+  position:absolute;left:35px;top:88px;width:320px;height:320px;border-radius:50%;
+  box-shadow:0 16px 32px rgba(15,23,42,.10);
+  background:conic-gradient(var(--rv) 0% var(--pct-rv,30.84%),var(--p2p) var(--pct-rv,30.84%) var(--pct-p2p-end,80.06%),var(--crypto) var(--pct-p2p-end,80.06%) var(--pct-crypto-end,87.24%),var(--mp) var(--pct-crypto-end,87.24%) var(--pct-mp-end,96.16%),#8b5cf6 var(--pct-mp-end,96.16%) var(--pct-bonos-end,97.67%),var(--cash) var(--pct-bonos-end,97.67%) 100%);
+}
+.donut:after{content:"";position:absolute;inset:98px;background:#fff;border-radius:50%;z-index:1}
+.donut-center{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;font-size:25px;font-weight:950}
+.donut-center small{font-size:15px;color:var(--muted);font-weight:800;margin-top:5px}
+.slice-label{position:absolute;z-index:3;transform:translate(-50%,-50%);color:#fff;font-weight:950;font-size:18px;text-shadow:0 2px 5px rgba(0,0,0,.35)}
+.slice-label.dark{color:#101827;text-shadow:0 1px 3px rgba(255,255,255,.75)}
+.legend-row{position:absolute;left:385px;width:260px;height:38px;display:grid;grid-template-columns:20px 1fr 105px;gap:10px;align-items:center}
+.dot{width:16px;height:16px;border-radius:50%}
+.asset{font-size:17px}.amount{text-align:right;font-size:17px;font-weight:850}
+.total-row{position:absolute;left:385px;top:380px;width:260px;border-top:2px solid var(--line);padding-top:14px;display:grid;grid-template-columns:1fr 105px;gap:10px;font-size:17px;font-weight:950}
+.date{position:absolute;left:0;bottom:20px;width:670px;text-align:center;color:var(--muted);font-size:16px}
+.period{position:absolute;top:42px;width:52px;height:36px;border-radius:10px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;background:#fff}
+.period.active{background:#101827;color:#fff;border-color:#101827}
+svg{position:absolute;left:24px;top:86px;width:724px;height:330px}
+svg text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;fill:#101827;font-size:15px}
+.gridline{stroke:#e5e7eb;stroke-width:1}.axis{stroke:#cbd5e1;stroke-width:2}.area{fill:rgba(37,99,235,.13)}.line{fill:none;stroke:#2563eb;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}.point{fill:#fff;stroke:#2563eb;stroke-width:4}
+.note{position:absolute;left:24px;bottom:24px;color:#2563eb;background:#eef4ff;border:1px solid #bcd0ff;border-radius:10px;padding:10px 16px;font-size:17px;font-weight:950}
+.info-line{display:flex;align-items:center;gap:14px;font-size:18px;margin:15px 0}
+.round-icon{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:950}.red{background:#ef4444}.blue{background:#2563eb}.warning{color:#f59e0b;font-size:26px;width:28px;text-align:center}
+.page{position:absolute;left:20px;top:140px;width:1460px}
+.page-title{font-size:32px;font-weight:950;margin-bottom:8px}.hint{color:var(--muted);font-size:17px;margin-bottom:20px}
+.tablebox{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+table{width:100%;border-collapse:collapse}th,td{padding:12px 14px;border-bottom:1px solid var(--line);font-size:16px;text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left}th{background:#eef4ff;font-weight:950}.total{font-weight:950;color:#2563eb}
+.mini{position:absolute;width:351px;height:145px;padding:24px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+
+.money-input-v5{
+  width:130px !important;
+  min-width:110px !important;
+  height:42px !important;
+  border:2px solid #f59e0b !important;
+  border-radius:10px !important;
+  padding:6px 10px !important;
+  text-align:right !important;
+  font-size:18px !important;
+  font-weight:900 !important;
+  color:#101827 !important;
+  background:#fff7cc !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+}
+.money-input-v5:focus{
+  outline:none !important;
+  border-color:#2563eb !important;
+  background:#ffffff !important;
+  box-shadow:0 0 0 4px rgba(37,99,235,.20) !important;
+}
+.edit-toolbar{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin:0 0 18px 0;
+}
+.edit-toolbar button{
+  border:0;
+  border-radius:12px;
+  padding:12px 18px;
+  font-size:16px;
+  font-weight:950;
+  cursor:pointer;
+}
+.save-btn{background:#16a34a;color:white}
+.reset-btn{background:#dc2626;color:white}
+.status-pill{
+  background:#eef4ff;
+  color:#2563eb;
+  border:1px solid #bcd0ff;
+  border-radius:999px;
+  padding:10px 14px;
+  font-size:15px;
+  font-weight:900;
+}
+
+
+/* ===== AJUSTE DE ZOOM / VISTA COMPLETA ===== */
+html, body{
+  width:100%;
+  min-height:100%;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch;
+}
+body{
+  display:block;
+  margin:0;
+}
+#stage{
+  transform-origin: top left !important;
+  transition:none !important;
+}
+
+
+.money-input-v5.auto-filled{
+  background:#eaf2ff !important;
+  border-color:#2563eb !important;
+  color:#101827 !important;
+}
+.money-input-v5.manual-filled{
+  background:#fff7cc !important;
+  border-color:#f59e0b !important;
+}
+
+
+.passive-input{
+  width:130px !important;
+  min-width:110px !important;
+  height:42px !important;
+  border:2px solid #f59e0b !important;
+  border-radius:10px !important;
+  padding:6px 10px !important;
+  text-align:right !important;
+  font-size:18px !important;
+  font-weight:900 !important;
+  color:#101827 !important;
+  background:#fff7cc !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+}
+.passive-input:focus{
+  outline:none !important;
+  border-color:#2563eb !important;
+  background:#ffffff !important;
+  box-shadow:0 0 0 4px rgba(37,99,235,.20) !important;
+}
+.passive-input.auto-filled{
+  background:#eaf2ff !important;
+  border-color:#2563eb !important;
+}
+.passive-input.manual-filled{
+  background:#fff7cc !important;
+  border-color:#f59e0b !important;
+}
+
+
+/* ===== P2P MODO DÍA ===== */
+.p2p-day{
+  color:#101827;
+}
+.p2p-day .p2p-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:22px;
+  margin-bottom:28px;
+}
+.p2p-day .p2p-card{
+  background:#ffffff;
+  border:1px solid #dbe3ef;
+  border-radius:18px;
+  padding:24px;
+  box-shadow:0 10px 24px rgba(15,23,42,.06);
+}
+.p2p-day h3{
+  margin:0 0 18px 0;
+  font-size:24px;
+  letter-spacing:-.035em;
+}
+.p2p-day .p2p-section-title{
+  margin:34px 0 14px 0;
+  font-size:18px;
+  color:#667085;
+  text-transform:uppercase;
+  font-weight:950;
+  letter-spacing:.08em;
+}
+.p2p-day .bar-row{
+  display:grid;
+  grid-template-columns:120px 1fr 54px;
+  gap:14px;
+  align-items:center;
+  margin:12px 0;
+  font-size:15px;
+}
+.p2p-day .bar-track{
+  height:24px;
+  border-radius:999px;
+  background:#eef2f7;
+  overflow:hidden;
+}
+.p2p-day .bar-fill{
+  height:100%;
+  border-radius:999px;
+  background:#16a34a;
+}
+.p2p-day .bar-fill.orange{
+  background:#f59e0b;
+}
+.p2p-day .donut-p2p{
+  width:310px;
+  height:310px;
+  border-radius:50%;
+  margin:8px auto 16px auto;
+  background:conic-gradient(
+    #3b82f6 0 12.3%,
+    #10b981 12.3% 24.1%,
+    #f59e0b 24.1% 34.3%,
+    #8b5cf6 34.3% 44.1%,
+    #ef4444 44.1% 52.9%,
+    #14b8a6 52.9% 61.2%,
+    #fb923c 61.2% 68.7%,
+    #d946ef 68.7% 75.7%,
+    #22c55e 75.7% 82.2%,
+    #60a5fa 82.2% 88.3%,
+    #a78bfa 88.3% 93.4%,
+    #f87171 93.4% 97.8%,
+    #facc15 97.8% 100%
+  );
+  position:relative;
+  box-shadow:0 16px 32px rgba(15,23,42,.12);
+}
+.p2p-day .donut-p2p:after{
+  content:"";
+  position:absolute;
+  inset:92px;
+  background:#ffffff;
+  border-radius:50%;
+}
+.p2p-day .p2p-legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 16px;
+  justify-content:center;
+  font-size:14px;
+  color:#475467;
+}
+.p2p-day .p2p-legend span:before{
+  content:"";
+  display:inline-block;
+  width:11px;
+  height:11px;
+  margin-right:6px;
+  border-radius:3px;
+  background:var(--c);
+}
+.p2p-day table th{
+  background:#eef4ff;
+  color:#101827;
+}
+.p2p-day table td,
+.p2p-day table th{
+  font-size:15px;
+}
+.p2p-day .pill{
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:13px;
+}
+.p2p-day .pill.green{background:#dcfce7;color:#15803d}
+.p2p-day .pill.orange{background:#fef3c7;color:#b45309}
+.p2p-day .pill.blue{background:#dbeafe;color:#2563eb}
+.p2p-day .p2p-summary-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+.p2p-day .summary-box{
+  background:#f8fafc;
+  border:1px solid #dbe3ef;
+  border-radius:16px;
+  padding:20px;
+}
+.p2p-day .summary-label{
+  font-size:14px;
+  color:#667085;
+  font-weight:900;
+  text-transform:uppercase;
+}
+.p2p-day .summary-value{
+  font-size:32px;
+  font-weight:950;
+  margin-top:10px;
+}
+.p2p-day .slider-row{
+  display:grid;
+  grid-template-columns:260px 1fr 120px;
+  gap:18px;
+  align-items:center;
+  margin:20px 0;
+}
+.p2p-day input[type="range"]{
+  width:100%;
+}
+
+
+/* ===== P2P TABLA EDITABLE ===== */
+.p2p-edit-input{
+  width:105px;
+  height:34px;
+  border:2px solid #f59e0b;
+  border-radius:9px;
+  background:#fff7cc;
+  color:#101827;
+  font-size:15px;
+  font-weight:900;
+  text-align:right;
+  padding:4px 8px;
+  -webkit-appearance:none;
+  appearance:none;
+}
+.p2p-edit-input.text{
+  text-align:left;
+  width:120px;
+}
+.p2p-edit-input:focus{
+  outline:none;
+  border-color:#2563eb;
+  background:#ffffff;
+  box-shadow:0 0 0 3px rgba(37,99,235,.18);
+}
+.p2p-edit-select{
+  height:34px;
+  border:2px solid #f59e0b;
+  border-radius:9px;
+  background:#fff7cc;
+  color:#101827;
+  font-size:15px;
+  font-weight:900;
+  padding:4px 8px;
+}
+.p2p-toolbar{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin:0 0 18px 0;
+}
+.p2p-toolbar button{
+  border:0;
+  border-radius:12px;
+  padding:12px 18px;
+  font-size:16px;
+  font-weight:950;
+  cursor:pointer;
+}
+.p2p-save{background:#16a34a;color:white}
+.p2p-reset{background:#dc2626;color:white}
+.p2p-status{
+  background:#eef4ff;
+  color:#2563eb;
+  border:1px solid #bcd0ff;
+  border-radius:999px;
+  padding:10px 14px;
+  font-size:15px;
+  font-weight:900;
+}
+
+
+.p2p-day .bar-fill{transition:width .2s ease;background:#16a34a}
+.p2p-day .donut-p2p{transition:background .2s ease}
+
+
+/* ===== GRÁFICO TARTA P2P TOTAL ===== */
+.p2p-pie-wrap{
+  display:grid;
+  grid-template-columns:1fr;
+  justify-items:center;
+}
+.p2p-pie-title{
+  width:100%;
+  font-size:28px;
+  font-weight:950;
+  letter-spacing:-.035em;
+  margin:0 0 14px 0;
+}
+.p2p-pie-svg{
+  width:560px;
+  height:560px;
+  max-width:100%;
+  overflow:visible;
+}
+.p2p-pie-label{
+  font-weight:950;
+  font-size:24px;
+  fill:#101827;
+  paint-order:stroke;
+  stroke:#ffffff;
+  stroke-width:6px;
+  stroke-linejoin:round;
+}
+.p2p-pie-label.small{
+  font-size:17px;
+}
+.p2p-pie-legend-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px 22px;
+  width:100%;
+  margin-top:10px;
+}
+.p2p-pie-legend-item{
+  display:grid;
+  grid-template-columns:18px 1fr auto auto;
+  gap:12px;
+  align-items:center;
+  background:#f8fafc;
+  border:1px solid #dbe3ef;
+  border-radius:14px;
+  padding:12px 16px;
+  font-size:17px;
+}
+.p2p-pie-legend-dot{
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  background:var(--pie-color);
+}
+.p2p-pie-legend-name{
+  font-weight:950;
+}
+.p2p-pie-legend-pct,
+.p2p-pie-legend-amount{
+  font-variant-numeric:tabular-nums;
+}
+
+
+/* ===== P2P FORMULARIO PLATAFORMAS ===== */
+.p2p-platform-form{background:#fff;border:1px solid #dbe3ef;border-radius:22px;padding:26px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.p2p-form-head{display:grid;grid-template-columns:1.15fr 1.05fr 1.05fr 1.05fr .65fr .55fr .55fr;gap:22px;color:#667085;font-size:15px;font-weight:950;letter-spacing:.12em;text-transform:uppercase;padding:0 16px 14px 16px}
+.p2p-form-row{display:grid;grid-template-columns:1.15fr 1.05fr 1.05fr 1.05fr .65fr .55fr .55fr;gap:22px;align-items:center;background:#f8fafc;border:1px solid #d1d8e3;border-radius:18px;padding:16px;margin:14px 0}
+.p2p-form-input{width:100%;min-height:58px;border:1px solid #cfd7e3;border-radius:14px;background:#fff;color:#101827;font-size:23px;font-weight:950;padding:10px 16px;-webkit-appearance:none;appearance:none}
+.p2p-form-input:focus{outline:none;border-color:#60a5fa;box-shadow:0 0 0 4px rgba(96,165,250,.22)}
+.p2p-form-select{width:100%;min-height:58px;border:1px solid #cfd7e3;border-radius:14px;color:#101827;font-size:23px;font-weight:950;padding:8px 12px;background:#fff3cf}
+.p2p-form-select.aum{background:#c8f3e8;border-color:#8dd8c7}.p2p-form-select.red{background:#f8d7da;border-color:#e7a5ac}.p2p-form-select.man{background:#fff3cf;border-color:#ead390}
+.p2p-form-weight{font-size:21px;font-weight:850;color:#101827}.p2p-delete{min-height:58px;border:1px solid #cfd7e3;border-radius:18px;background:#eef0f4;color:#101827;font-size:18px;font-weight:950;cursor:pointer}.p2p-add{margin-top:18px;border:0;border-radius:14px;padding:16px 22px;background:linear-gradient(135deg,#5cc8ff,#8b5cf6);color:#101827;font-size:18px;font-weight:950;cursor:pointer}.p2p-form-note{color:#667085;font-size:18px;margin:0 0 22px 0}
+
+
+/* ===== P2P MOVIMIENTOS MENSUALES ===== */
+.p2p-monthly-form{
+  background:#ffffff;
+  border:1px solid #dbe3ef;
+  border-radius:22px;
+  padding:26px;
+  box-shadow:0 10px 24px rgba(15,23,42,.06);
+  margin-top:34px;
+}
+.p2p-monthly-head{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr .45fr;
+  gap:28px;
+  color:#667085;
+  font-size:15px;
+  font-weight:950;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  padding:0 16px 14px 16px;
+}
+.p2p-monthly-row{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr .45fr;
+  gap:28px;
+  align-items:center;
+  background:#f8fafc;
+  border:1px solid #d1d8e3;
+  border-radius:18px;
+  padding:16px;
+  margin:14px 0;
+}
+.p2p-monthly-input{
+  width:100%;
+  min-height:58px;
+  border:1px solid #cfd7e3;
+  border-radius:14px;
+  background:#ffffff;
+  color:#101827;
+  font-size:23px;
+  font-weight:950;
+  padding:10px 16px;
+  -webkit-appearance:none;
+  appearance:none;
+}
+.p2p-monthly-input:focus{
+  outline:none;
+  border-color:#60a5fa;
+  box-shadow:0 0 0 4px rgba(96,165,250,.22);
+}
+.p2p-monthly-total{
+  font-size:22px;
+  font-weight:850;
+  color:#101827;
+}
+.p2p-monthly-delete{
+  min-height:58px;
+  border:1px solid #cfd7e3;
+  border-radius:18px;
+  background:#eef0f4;
+  color:#101827;
+  font-size:18px;
+  font-weight:950;
+  cursor:pointer;
+}
+.p2p-monthly-total-row{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr .45fr;
+  gap:28px;
+  align-items:center;
+  background:#f8fafc;
+  border:1px solid #d1d8e3;
+  border-radius:18px;
+  padding:16px;
+  margin:18px 0;
+  font-size:23px;
+  font-weight:950;
+}
+.p2p-monthly-add{
+  margin-top:0;
+  border:0;
+  border-radius:14px;
+  padding:16px 22px;
+  background:linear-gradient(135deg,#5cc8ff,#8b5cf6);
+  color:#101827;
+  font-size:18px;
+  font-weight:950;
+  cursor:pointer;
+}
+
+
+/* ===== KPIS SUPERIORES P2P ===== */
+.p2p-kpi-strip{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:22px;
+  margin:20px 0 30px 0;
+  padding:0;
+}
+.p2p-kpi-card{
+  position:relative;
+  overflow:hidden;
+  background:#ffffff;
+  border:1px solid #dbe3ef;
+  border-radius:22px;
+  padding:28px 28px 34px 28px;
+  min-height:210px;
+  box-shadow:0 14px 30px rgba(15,23,42,.08);
+}
+.p2p-kpi-card:after{
+  content:"";
+  position:absolute;
+  right:-36px;
+  bottom:-52px;
+  width:170px;
+  height:170px;
+  border-radius:50%;
+  background:rgba(186,230,253,.65);
+}
+.p2p-kpi-label{
+  position:relative;
+  z-index:1;
+  color:#667085;
+  font-size:20px;
+  font-weight:950;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  line-height:1.18;
+}
+.p2p-kpi-value{
+  position:relative;
+  z-index:1;
+  margin-top:48px;
+  color:#101827;
+  font-size:48px;
+  font-weight:950;
+  line-height:1;
+  letter-spacing:-.04em;
+}
+.p2p-kpi-sub{
+  position:relative;
+  z-index:1;
+  margin-top:18px;
+  color:#667085;
+  font-size:20px;
+  line-height:1.25;
+}
+@media(max-width:1200px){
+  .p2p-kpi-strip{grid-template-columns:1fr 1fr}
+}
+
+
+/* ===== ROSCO P2P CAPITAL ===== */
+.p2p-donut-card{
+  min-height:520px;
+}
+.p2p-donut-svg{
+  width:430px;
+  height:430px;
+  max-width:100%;
+  display:block;
+  margin:0 auto;
+}
+.p2p-donut-center{
+  font-size:30px;
+  font-weight:950;
+  fill:#101827;
+}
+.p2p-donut-sub{
+  font-size:14px;
+  font-weight:850;
+  fill:#667085;
+}
+.p2p-donut-legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 16px;
+  justify-content:center;
+  margin-top:8px;
+  color:#475467;
+  font-size:15px;
+}
+.p2p-donut-legend span:before{
+  content:"";
+  display:inline-block;
+  width:12px;
+  height:12px;
+  border-radius:3px;
+  background:var(--c);
+  margin-right:6px;
+}
+
+
+/* ===== LAYOUT ROSCO IZQUIERDA + DISTRIBUCIÓN DERECHA ===== */
+.p2p-distribution-layout{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:22px;
+  margin-bottom:28px;
+}
+.p2p-left-pie-card,
+.p2p-right-list-card{
+  background:#ffffff;
+  border:1px solid #dbe3ef;
+  border-radius:22px;
+  padding:28px;
+  box-shadow:0 10px 24px rgba(15,23,42,.06);
+}
+.p2p-left-pie-card h3,
+.p2p-right-list-card h3{
+  font-size:28px;
+  margin:0 0 24px 0;
+  letter-spacing:-.04em;
+}
+.p2p-big-pie-svg{
+  width:100%;
+  max-width:620px;
+  height:auto;
+  display:block;
+  margin:0 auto;
+  overflow:visible;
+}
+.p2p-big-pie-label{
+  font-weight:950;
+  font-size:23px;
+  fill:#101827;
+  paint-order:stroke;
+  stroke:#ffffff;
+  stroke-width:6px;
+  stroke-linejoin:round;
+}
+.p2p-big-pie-label.small{
+  font-size:17px;
+}
+.p2p-right-list-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px 22px;
+}
+.p2p-right-list-item{
+  display:grid;
+  grid-template-columns:22px 1fr auto auto;
+  gap:12px;
+  align-items:center;
+  background:#f8fafc;
+  border:1px solid #dbe3ef;
+  border-radius:15px;
+  padding:14px 16px;
+  min-height:58px;
+  font-size:18px;
+}
+.p2p-right-list-dot{
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:var(--pie-color);
+}
+.p2p-right-list-name{
+  font-weight:950;
+}
+.p2p-right-list-pct,
+.p2p-right-list-amount{
+  font-variant-numeric:tabular-nums;
+}
+@media(max-width:1200px){
+  .p2p-distribution-layout{grid-template-columns:1fr}
+}
+
+
+/* ===== AJUSTE POSICIÓN ROSCO P2P ===== */
+.p2p-left-pie-card{
+  min-height:720px !important;
+  overflow:hidden !important;
+}
+.p2p-big-pie-svg{
+  width:88% !important;
+  max-width:520px !important;
+  margin:28px auto 0 auto !important;
+  display:block !important;
+}
+.p2p-big-pie-label{
+  font-size:18px !important;
+  stroke-width:5px !important;
+}
+.p2p-big-pie-label.small{
+  font-size:14px !important;
+}
+
+
+/* ===== CALCULADORA PRO ===== */
+.calc-wrap{
+  display:grid;
+  grid-template-columns:.9fr 1.1fr;
+  gap:24px;
+  margin-top:12px;
+}
+.calc-card{
+  background:#ffffff;
+  border:1px solid #dbe3ef;
+  border-radius:22px;
+  padding:28px;
+  box-shadow:0 10px 24px rgba(15,23,42,.06);
+}
+.calc-card h3{
+  margin:0 0 18px 0;
+  font-size:28px;
+  letter-spacing:-.04em;
+}
+.calc-help{
+  color:#667085;
+  font-size:18px;
+  line-height:1.35;
+  margin-bottom:20px;
+}
+.calc-row{
+  display:grid;
+  grid-template-columns:1fr 240px;
+  gap:18px;
+  align-items:center;
+  background:#f8fafc;
+  border:1px solid #d1d8e3;
+  border-radius:16px;
+  padding:16px;
+  margin:14px 0;
+}
+.calc-row label{
+  font-size:20px;
+  color:#101827;
+}
+.calc-input{
+  width:100%;
+  min-height:54px;
+  border:1px solid #cfd7e3;
+  border-radius:14px;
+  background:#ffffff;
+  color:#101827;
+  font-size:24px;
+  font-weight:950;
+  padding:8px 14px;
+  -webkit-appearance:none;
+  appearance:none;
+}
+.calc-input:focus{
+  outline:none;
+  border-color:#60a5fa;
+  box-shadow:0 0 0 4px rgba(96,165,250,.22);
+}
+.calc-btn{
+  margin-top:10px;
+  border:0;
+  border-radius:14px;
+  padding:16px 24px;
+  background:linear-gradient(135deg,#5cc8ff,#8b5cf6);
+  color:#101827;
+  font-size:17px;
+  font-weight:950;
+  cursor:pointer;
+}
+.calc-result-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+.calc-result-box{
+  background:#f8fafc;
+  border:1px solid #d1d8e3;
+  border-radius:16px;
+  padding:20px;
+  min-height:145px;
+}
+.calc-result-label{
+  color:#667085;
+  font-size:15px;
+  font-weight:950;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  line-height:1.25;
+}
+.calc-result-value{
+  margin-top:18px;
+  color:#101827;
+  font-size:30px;
+  font-weight:950;
+  letter-spacing:-.04em;
+}
+.calc-result-sub{
+  color:#667085;
+  font-size:16px;
+  margin-top:8px;
+}
+.calc-chart-card{
+  margin-top:24px;
+}
+.calc-chart-svg{
+  width:100%;
+  height:500px;
+  display:block;
+}
+.calc-legend{
+  display:flex;
+  justify-content:center;
+  gap:28px;
+  margin-bottom:10px;
+  color:#667085;
+  font-size:15px;
+}
+.calc-legend span:before{
+  content:"";
+  display:inline-block;
+  width:42px;
+  height:14px;
+  border:3px solid var(--c);
+  background:rgba(96,165,250,.18);
+  margin-right:8px;
+  vertical-align:middle;
+}
+.calc-legend span:nth-child(2):before{
+  background:rgba(255,99,132,.18);
+}
+@media(max-width:1200px){
+  .calc-wrap{grid-template-columns:1fr}
+  .calc-result-grid{grid-template-columns:1fr 1fr}
+}
+
+
+/* ===== GRÁFICO DE QUESOS RESUMEN + BONOS MORADO ===== */
+.donut{
+  border-radius:50% !important;
+}
+.donut:after,
+.donut-center{
+  display:none !important;
+}
+.slice-label{
+  font-size:21px !important;
+  font-weight:950 !important;
+  color:#ffffff !important;
+  text-shadow:0 2px 6px rgba(15,23,42,.45);
+  pointer-events:none;
+}
+.legend .dot.bonos,
+.bonos-dot{
+  background:#8b5cf6 !important;
+}
+
+</style>
+</head>
+<body>
+<div id="stage">
+
+<button class="tab active" style="left:16px" data-sec="resumen">Resumen</button>
+<button class="tab" style="left:200px" data-sec="mensual">Evolución<br>mensual</button>
+<button class="tab" style="left:384px" data-sec="ingresos">Ingresos<br>pasivos</button>
+<button class="tab" style="left:568px" data-sec="distribucion">Distribución</button>
+<button class="tab" style="left:752px" data-sec="rv">Renta<br>variable</button>
+<button class="tab" style="left:936px" data-sec="p2p">P2P</button>
+<button class="tab" style="left:1120px" data-sec="inmueble">Inmueble</button>
+<button class="tab" style="left:1304px" data-sec="calculadora">Calculadora</button>
+
+<section id="resumen" class="section active">
+  <div class="card kpi" style="left:20px"><div class="label">Patrimonio total</div><div class="value" id="kpiPatrimonioTotal">567.800 €</div><div class="sub">Incluye inmueble + efectivo</div></div>
+  <div class="card kpi" style="left:389px"><div class="label">Capital invertible</div><div class="value" id="kpiCapitalInvertible">257.800 €</div><div class="sub">RV + P2P + Cripto + Materias primas<br>+ Bonos + Efectivo</div></div>
+  <div class="card kpi" style="left:758px"><div class="label">Ingresos pasivos YTD</div><div class="value" id="kpiIngresosPasivosYTD">27.516 €</div><div class="sub" id="kpiIngresosPasivosSub">Media mensual: 2.293 €</div></div>
+  <div class="card kpi" style="left:1127px"><div class="label">Ingreso mensual medio</div><div class="value" id="kpiIngresoMensualMedio">2.293 €</div><div class="sub">Media mensual YTD positiva</div></div>
+
+  <div class="card" style="left:20px;top:318px;width:670px;height:500px;padding:24px">
+    <h2>Asignación por subcategoría</h2>
+    <div class="donut">
+      <div class="donut-center"><span id="donutTotalInvertible">257.800 €</span><small>Total invertible</small></div>
+      <div class="slice-label" id="pctRV" style="left:76%;top:35%">30,84%</div>
+      <div class="slice-label" id="pctP2P" style="left:35%;top:79%">49,22%</div>
+      <div class="slice-label" id="pctCripto" style="left:16%;top:46%">7,18%</div>
+      <div class="slice-label dark" id="pctMP" style="left:26%;top:25%">8,92%</div>
+      <div class="slice-label dark" id="pctBonos" style="left:44%;top:13%">1,51%</div>
+      <div class="slice-label" id="pctCash" style="left:52%;top:12%">2,33%</div>
+    </div>
+    <div class="legend-row" style="top:88px"><span class="dot" style="background:var(--rv)"></span><span class="asset">Renta variable</span><span class="amount" id="legendRV">79.500 €</span></div>
+    <div class="legend-row" style="top:136px"><span class="dot" style="background:var(--p2p)"></span><span class="asset">P2P</span><span class="amount" id="legendP2P">126.900 €</span></div>
+    <div class="legend-row" style="top:184px"><span class="dot" style="background:var(--crypto)"></span><span class="asset">Criptomonedas</span><span class="amount" id="legendCripto">18.500 €</span></div>
+    <div class="legend-row" style="top:232px"><span class="dot" style="background:var(--mp)"></span><span class="asset">Materias primas</span><span class="amount" id="legendMP">23.000 €</span></div>
+    <div class="legend-row" style="top:280px"><span class="dot" style="background:#8b5cf6"></span><span class="asset">Bonos</span><span class="amount" id="legendBonos">3.900 €</span></div>
+    <div class="legend-row" style="top:328px"><span class="dot" style="background:var(--cash)"></span><span class="asset">Efectivo</span><span class="amount" id="legendCash">6.000 €</span></div>
+    <div class="total-row"><span>Total capital invertible</span><span id="legendTotalInvertible" style="text-align:right">257.800 €</span></div>
+    <div class="date">Datos a 23 de mayo de 2025</div>
+  </div>
+
+  <div class="card" style="left:708px;top:318px;width:772px;height:500px;padding:24px">
+    <h2>Patrimonio total + evolución</h2>
+    <span class="period active" style="right:246px">YTD</span><span class="period" style="right:184px">1A</span><span class="period" style="right:122px">3A</span><span class="period" style="right:60px">5A</span><span class="period" style="right:0">Todo</span>
+    <svg id="wealthSvg" viewBox="0 0 760 340" preserveAspectRatio="none">
+      <line class="gridline" x1="70" y1="35" x2="740" y2="35"/><line class="gridline" x1="70" y1="100" x2="740" y2="100"/><line class="gridline" x1="70" y1="165" x2="740" y2="165"/><line class="gridline" x1="70" y1="230" x2="740" y2="230"/><line class="gridline" x1="70" y1="295" x2="740" y2="295"/>
+      <text id="yLabel0" x="20" y="40">580.000</text><text id="yLabel1" x="20" y="105">570.000</text><text id="yLabel2" x="20" y="170">560.000</text><text id="yLabel3" x="20" y="235">550.000</text><text id="yLabel4" x="20" y="300">540.000</text>
+      <line class="axis" x1="70" y1="295" x2="740" y2="295"/><line class="axis" x1="70" y1="35" x2="70" y2="295"/>
+      <path class="area" id="wealthArea" d=""/>
+      <path class="line" id="wealthLine" d=""/>
+      <g id="wealthPoints"></g>
+      <text x="58" y="325">Ene</text><text x="119" y="325">Feb</text><text x="181" y="325">Mar</text><text x="244" y="325">Abr</text><text x="304" y="325">May</text><text x="365" y="325">Jun</text><text x="426" y="325">Jul</text><text x="487" y="325">Ago</text><text x="548" y="325">Sep</text><text x="609" y="325">Oct</text><text x="670" y="325">Nov</text><text x="730" y="325">Dic</text>
+    </svg>
+    <div class="note" id="evolucionYTD">Evolución YTD: +5,41% (+29.148 €)</div>
+  </div>
+
+  <div class="card" style="left:20px;top:836px;width:670px;height:160px;padding:24px">
+    <h2>Rebalanceo sugerido</h2>
+    <div class="info-line"><span class="round-icon red">↓</span>Sobreponderado: P2P</div>
+    <div class="info-line"><span class="round-icon blue">↑</span>Infraponderado: Renta variable</div>
+  </div>
+  <div class="card" style="left:708px;top:836px;width:772px;height:160px;padding:24px">
+    <h2>Alertas principales</h2>
+    <div id="alertasDinamicas"></div>
+  </div>
+</section>
+
+
+<section id="mensual" class="section">
+  <div class="page">
+    <div class="page-title">Evolución mensual EDITABLE</div>
+    <div class="hint">Introduce un valor una vez y las siguientes celdas de esa misma columna copiarán automáticamente el valor anterior hasta que escribas otro.</div>
+
+    <div class="edit-toolbar">
+      <button class="save-btn" type="button" onclick="guardarTablaMensualV5()">💾 Guardar cambios</button>
+      <button class="reset-btn" type="button" onclick="resetTablaMensualV5()">↩️ Restaurar datos iniciales</button>
+      <span id="saveStatusV5" class="status-pill">Tabla editable activa</span>
+    </div>
+
+    <div class="tablebox">
+      <table id="tablaMensualV5">
+        <thead>
+          <tr>
+            <th>Mes</th>
+            <th>RV</th>
+            <th>P2P</th>
+            <th>Inmueble</th>
+            <th>Mat. primas</th>
+            <th>Cripto</th>
+            <th>Bonos</th>
+            <th>Efectivo</th>
+            <th class="total">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><b>Ene</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="0" data-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="0" data-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="0" data-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="0" data-col="3" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="0" data-col="4" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="0" data-col="5" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="0" data-col="6" value="0"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Feb</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="1" data-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="1" data-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="1" data-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="1" data-col="3" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="1" data-col="4" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="1" data-col="5" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="1" data-col="6" value="0"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Mar</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="2" data-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="2" data-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="2" data-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="2" data-col="3" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="2" data-col="4" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="2" data-col="5" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="2" data-col="6" value="0"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Abr</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="3" data-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="3" data-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="3" data-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="3" data-col="3" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="3" data-col="4" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="3" data-col="5" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="3" data-col="6" value="0"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>May</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="4" data-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="4" data-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="4" data-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="4" data-col="3" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="4" data-col="4" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="4" data-col="5" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="4" data-col="6" value="0"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Jun</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="5" data-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="5" data-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="5" data-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="5" data-col="3" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="5" data-col="4" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="5" data-col="5" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="5" data-col="6" value="0"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Jul</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="6" data-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="6" data-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="6" data-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="6" data-col="3" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="6" data-col="4" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="6" data-col="5" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="6" data-col="6" value="0"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Ago</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="7" data-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="7" data-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="7" data-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="7" data-col="3" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="7" data-col="4" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="7" data-col="5" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="7" data-col="6" value="0"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Sep</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="8" data-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="8" data-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="8" data-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="8" data-col="3" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="8" data-col="4" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="8" data-col="5" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="8" data-col="6" value="0"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Oct</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="9" data-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="9" data-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="9" data-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="9" data-col="3" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="9" data-col="4" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="9" data-col="5" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="9" data-col="6" value="0"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Nov</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="10" data-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="10" data-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="10" data-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="10" data-col="3" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="10" data-col="4" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="10" data-col="5" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="10" data-col="6" value="0"></td><td class="total row-total-v5">0 €</td></tr>
+<tr><td><b>Dic</b></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="11" data-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="11" data-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="11" data-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="11" data-col="3" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="11" data-col="4" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="11" data-col="5" value="0"></td><td><input inputmode="decimal" type="text" class="money-input-v5" data-row="11" data-col="6" value="0"></td><td class="total row-total-v5">0 €</td></tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+
+
+<section id="ingresos" class="section">
+  <div class="page">
+    <div class="page-title">Ingresos pasivos</div>
+    <div class="hint">Tabla mensual editable. ALQUILER, P2P, DIVIDENDOS y DCA actualizan automáticamente las KPIs del Resumen: Ingresos pasivos YTD e Ingreso mensual medio.</div>
+
+    <div class="edit-toolbar">
+      <button class="save-btn" type="button" onclick="guardarIngresosPasivos()">💾 Guardar cambios</button>
+      <button class="reset-btn" type="button" onclick="resetIngresosPasivos()">↩️ Restaurar datos iniciales</button>
+      <span id="passiveStatus" class="status-pill">Tabla de ingresos pasivos activa</span>
+    </div>
+
+    <div class="tablebox">
+      <table id="tablaIngresosPasivos">
+        <thead>
+          <tr>
+            <th>Mes</th>
+            <th>ALQUILER</th>
+            <th>P2P</th>
+            <th>DIVIDENDOS</th>
+            <th>DCA</th>
+            <th class="total">TOTAL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><b>Ene</b></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="0" data-pass-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="0" data-pass-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="0" data-pass-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="0" data-pass-col="3" value="0"></td><td class="total passive-row-total">0 €</td></tr>
+<tr><td><b>Feb</b></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="1" data-pass-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="1" data-pass-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="1" data-pass-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="1" data-pass-col="3" value="0"></td><td class="total passive-row-total">0 €</td></tr>
+<tr><td><b>Mar</b></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="2" data-pass-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="2" data-pass-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="2" data-pass-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="2" data-pass-col="3" value="0"></td><td class="total passive-row-total">0 €</td></tr>
+<tr><td><b>Abr</b></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="3" data-pass-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="3" data-pass-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="3" data-pass-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="3" data-pass-col="3" value="0"></td><td class="total passive-row-total">0 €</td></tr>
+<tr><td><b>May</b></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="4" data-pass-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="4" data-pass-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="4" data-pass-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="4" data-pass-col="3" value="0"></td><td class="total passive-row-total">0 €</td></tr>
+<tr><td><b>Jun</b></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="5" data-pass-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="5" data-pass-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="5" data-pass-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="5" data-pass-col="3" value="0"></td><td class="total passive-row-total">0 €</td></tr>
+<tr><td><b>Jul</b></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="6" data-pass-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="6" data-pass-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="6" data-pass-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="6" data-pass-col="3" value="0"></td><td class="total passive-row-total">0 €</td></tr>
+<tr><td><b>Ago</b></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="7" data-pass-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="7" data-pass-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="7" data-pass-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="7" data-pass-col="3" value="0"></td><td class="total passive-row-total">0 €</td></tr>
+<tr><td><b>Sep</b></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="8" data-pass-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="8" data-pass-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="8" data-pass-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="8" data-pass-col="3" value="0"></td><td class="total passive-row-total">0 €</td></tr>
+<tr><td><b>Oct</b></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="9" data-pass-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="9" data-pass-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="9" data-pass-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="9" data-pass-col="3" value="0"></td><td class="total passive-row-total">0 €</td></tr>
+<tr><td><b>Nov</b></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="10" data-pass-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="10" data-pass-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="10" data-pass-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="10" data-pass-col="3" value="0"></td><td class="total passive-row-total">0 €</td></tr>
+<tr><td><b>Dic</b></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="11" data-pass-col="0" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="11" data-pass-col="1" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="11" data-pass-col="2" value="0"></td><td><input inputmode="decimal" type="text" class="passive-input" data-pass-row="11" data-pass-col="3" value="0"></td><td class="total passive-row-total">0 €</td></tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tablebox" style="margin-top:22px">
+      <table>
+        <thead>
+          <tr><th>Resumen</th><th>Importe</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Total ingresos pasivos YTD</td><td class="total" id="passiveTotalYTD">0 €</td></tr>
+          <tr><td>Media mensual</td><td class="total" id="passiveMediaMensual">0 €</td></tr>
+          <tr><td>Mejor mes</td><td class="total" id="passiveMejorMes">0 €</td></tr>
+          <tr><td>Último mes</td><td class="total" id="passiveUltimoMes">0 €</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="distribucion" class="section"><div class="page"><div class="page-title">Distribución</div><div class="hint">Objetivo de cartera y desviaciones.</div><div class="tablebox"><p style="font-size:22px;font-weight:900">Capital invertible: 257.800 € · Objetivo RV: 50% · Objetivo P2P: 25%</p></div></div></section>
+<section id="rv" class="section"><div class="page"><div class="page-title">Renta variable</div><div class="tablebox"><p style="font-size:22px;font-weight:900">Valor RV: 79.500 € · Peso invertible: 30,84% · Objetivo: 50%</p></div></div></section>
+
+<section id="p2p" class="section">
+  <div class="page p2p-day">
+    <div class="page-title">P2P</div>
+    <div class="hint">Rendimiento. concentración. detalle por plataforma. fiscalidad y proyección en modo día.</div>
+
+    <div class="p2p-kpi-strip">
+      <div class="p2p-kpi-card">
+        <div class="p2p-kpi-label">Patrimonio P2P<br>actual</div>
+        <div class="p2p-kpi-value" id="p2pKpiPatrimonio">0 €</div>
+        <div class="p2p-kpi-sub">Suma automática<br>del valor actual por plataforma</div>
+      </div>
+      <div class="p2p-kpi-card">
+        <div class="p2p-kpi-label">Retornos YTD</div>
+        <div class="p2p-kpi-value" id="p2pKpiRetornos">0 €</div>
+        <div class="p2p-kpi-sub">Intereses +<br>cashback del año</div>
+      </div>
+      <div class="p2p-kpi-card">
+        <div class="p2p-kpi-label">Rentabilidad<br>estimada</div>
+        <div class="p2p-kpi-value" id="p2pKpiRentabilidad">0,0%</div>
+        <div class="p2p-kpi-sub">YTD anualizada<br>sobre capital actual</div>
+      </div>
+      <div class="p2p-kpi-card">
+        <div class="p2p-kpi-label">Ingreso<br>mensual medio</div>
+        <div class="p2p-kpi-value" id="p2pKpiIngresoMedio">0 €</div>
+        <div class="p2p-kpi-sub">Media mensual YTD<br>positiva</div>
+      </div>
+      <div class="p2p-kpi-card">
+        <div class="p2p-kpi-label">Proyección<br>anual</div>
+        <div class="p2p-kpi-value" id="p2pKpiProyeccion">0 €</div>
+        <div class="p2p-kpi-sub">Ingresos P2P<br>anualizados</div>
+      </div>
+    </div>
+
+
+    
+    <div class="p2p-section-title">Distribución P2P</div>
+    <div class="p2p-distribution-layout">
+      <div class="p2p-left-pie-card">
+        <h3>Distribución total de inversiones por plataforma</h3>
+        <svg class="p2p-big-pie-svg" id="p2pBigPieSvg" viewBox="0 0 700 700" aria-label="Rosco de distribución P2P"></svg>
+      </div>
+
+      <div class="p2p-right-list-card">
+        <h3>Distribución total de inversiones por plataforma</h3>
+        <div class="p2p-right-list-grid" id="p2pRightDistributionList"></div>
+      </div>
+    </div>
+
+    <div class="p2p-section-title">Detalle por plataforma</div>
+    <div class="p2p-toolbar">
+      <button class="p2p-save" type="button" onclick="saveP2PPlatformForm()">💾 Guardar</button>
+      <button class="p2p-reset" type="button" onclick="resetP2PPlatformForm()">↩️ Reset demo</button>
+      <span id="p2pEditStatus" class="p2p-status">Formulario P2P editable activo</span>
+    </div>
+    <div class="p2p-platform-form" id="p2pPlatformForm">
+      <h3 style="margin:0 0 14px 0;font-size:32px">Plataformas</h3>
+      <p class="p2p-form-note">Edita valor actual, intereses, cashback, objetivo y peso actual. Pulsa “Guardar”.</p>
+      <div class="p2p-form-head"><div>Plataforma</div><div>Valor actual</div><div>Intereses</div><div>Cashback</div><div>Objetivo</div><div>Peso actual</div><div></div></div>
+      <div id="p2pPlatformRows">
+      <div class="p2p-form-row" data-platform-row="0">
+        <input class="p2p-form-input" data-form-field="platform" value="Debitum">
+        <input class="p2p-form-input" data-form-field="capital" inputmode="decimal" value="17203">
+        <input class="p2p-form-input" data-form-field="interest" inputmode="decimal" value="520">
+        <input class="p2p-form-input" data-form-field="cashback" inputmode="decimal" value="209">
+        <select class="p2p-form-select aum" data-form-field="objective">
+          <option value="Aum" selected>Aum</option>
+          <option value="Red" >Red</option>
+          <option value="Man" >Man</option>
+        </select>
+        <div class="p2p-form-weight" data-form-field="weight">0,0%</div>
+        <button class="p2p-delete" type="button" onclick="deleteP2PPlatformRow(this)">Eliminar</button>
+      </div>
+      <div class="p2p-form-row" data-platform-row="1">
+        <input class="p2p-form-input" data-form-field="platform" value="Maclear">
+        <input class="p2p-form-input" data-form-field="capital" inputmode="decimal" value="1150">
+        <input class="p2p-form-input" data-form-field="interest" inputmode="decimal" value="152">
+        <input class="p2p-form-input" data-form-field="cashback" inputmode="decimal" value="476">
+        <select class="p2p-form-select red" data-form-field="objective">
+          <option value="Aum" >Aum</option>
+          <option value="Red" selected>Red</option>
+          <option value="Man" >Man</option>
+        </select>
+        <div class="p2p-form-weight" data-form-field="weight">0,0%</div>
+        <button class="p2p-delete" type="button" onclick="deleteP2PPlatformRow(this)">Eliminar</button>
+      </div>
+      <div class="p2p-form-row" data-platform-row="2">
+        <input class="p2p-form-input" data-form-field="platform" value="Devon">
+        <input class="p2p-form-input" data-form-field="capital" inputmode="decimal" value="25669">
+        <input class="p2p-form-input" data-form-field="interest" inputmode="decimal" value="875">
+        <input class="p2p-form-input" data-form-field="cashback" inputmode="decimal" value="1552">
+        <select class="p2p-form-select man" data-form-field="objective">
+          <option value="Aum" >Aum</option>
+          <option value="Red" >Red</option>
+          <option value="Man" selected>Man</option>
+        </select>
+        <div class="p2p-form-weight" data-form-field="weight">0,0%</div>
+        <button class="p2p-delete" type="button" onclick="deleteP2PPlatformRow(this)">Eliminar</button>
+      </div>
+      <div class="p2p-form-row" data-platform-row="3">
+        <input class="p2p-form-input" data-form-field="platform" value="Loanch">
+        <input class="p2p-form-input" data-form-field="capital" inputmode="decimal" value="19331">
+        <input class="p2p-form-input" data-form-field="interest" inputmode="decimal" value="72">
+        <input class="p2p-form-input" data-form-field="cashback" inputmode="decimal" value="0">
+        <select class="p2p-form-select red" data-form-field="objective">
+          <option value="Aum" >Aum</option>
+          <option value="Red" selected>Red</option>
+          <option value="Man" >Man</option>
+        </select>
+        <div class="p2p-form-weight" data-form-field="weight">0,0%</div>
+        <button class="p2p-delete" type="button" onclick="deleteP2PPlatformRow(this)">Eliminar</button>
+      </div>
+      <div class="p2p-form-row" data-platform-row="4">
+        <input class="p2p-form-input" data-form-field="platform" value="Ventus">
+        <input class="p2p-form-input" data-form-field="capital" inputmode="decimal" value="10672">
+        <input class="p2p-form-input" data-form-field="interest" inputmode="decimal" value="563">
+        <input class="p2p-form-input" data-form-field="cashback" inputmode="decimal" value="620">
+        <select class="p2p-form-select man" data-form-field="objective">
+          <option value="Aum" >Aum</option>
+          <option value="Red" >Red</option>
+          <option value="Man" selected>Man</option>
+        </select>
+        <div class="p2p-form-weight" data-form-field="weight">0,0%</div>
+        <button class="p2p-delete" type="button" onclick="deleteP2PPlatformRow(this)">Eliminar</button>
+      </div>
+      <div class="p2p-form-row" data-platform-row="5">
+        <input class="p2p-form-input" data-form-field="platform" value="Forest">
+        <input class="p2p-form-input" data-form-field="capital" inputmode="decimal" value="10389">
+        <input class="p2p-form-input" data-form-field="interest" inputmode="decimal" value="516">
+        <input class="p2p-form-input" data-form-field="cashback" inputmode="decimal" value="343">
+        <select class="p2p-form-select aum" data-form-field="objective">
+          <option value="Aum" selected>Aum</option>
+          <option value="Red" >Red</option>
+          <option value="Man" >Man</option>
+        </select>
+        <div class="p2p-form-weight" data-form-field="weight">0,0%</div>
+        <button class="p2p-delete" type="button" onclick="deleteP2PPlatformRow(this)">Eliminar</button>
+      </div>
+      <div class="p2p-form-row" data-platform-row="6">
+        <input class="p2p-form-input" data-form-field="platform" value="Mintos">
+        <input class="p2p-form-input" data-form-field="capital" inputmode="decimal" value="110">
+        <input class="p2p-form-input" data-form-field="interest" inputmode="decimal" value="56">
+        <input class="p2p-form-input" data-form-field="cashback" inputmode="decimal" value="0">
+        <select class="p2p-form-select red" data-form-field="objective">
+          <option value="Aum" >Aum</option>
+          <option value="Red" selected>Red</option>
+          <option value="Man" >Man</option>
+        </select>
+        <div class="p2p-form-weight" data-form-field="weight">0,0%</div>
+        <button class="p2p-delete" type="button" onclick="deleteP2PPlatformRow(this)">Eliminar</button>
+      </div>
+      <div class="p2p-form-row" data-platform-row="7">
+        <input class="p2p-form-input" data-form-field="platform" value="Viainvest">
+        <input class="p2p-form-input" data-form-field="capital" inputmode="decimal" value="1289">
+        <input class="p2p-form-input" data-form-field="interest" inputmode="decimal" value="61">
+        <input class="p2p-form-input" data-form-field="cashback" inputmode="decimal" value="0">
+        <select class="p2p-form-select red" data-form-field="objective">
+          <option value="Aum" >Aum</option>
+          <option value="Red" selected>Red</option>
+          <option value="Man" >Man</option>
+        </select>
+        <div class="p2p-form-weight" data-form-field="weight">0,0%</div>
+        <button class="p2p-delete" type="button" onclick="deleteP2PPlatformRow(this)">Eliminar</button>
+      </div>
+      <div class="p2p-form-row" data-platform-row="8">
+        <input class="p2p-form-input" data-form-field="platform" value="HIVE-5">
+        <input class="p2p-form-input" data-form-field="capital" inputmode="decimal" value="11248">
+        <input class="p2p-form-input" data-form-field="interest" inputmode="decimal" value="561">
+        <input class="p2p-form-input" data-form-field="cashback" inputmode="decimal" value="167">
+        <select class="p2p-form-select man" data-form-field="objective">
+          <option value="Aum" >Aum</option>
+          <option value="Red" >Red</option>
+          <option value="Man" selected>Man</option>
+        </select>
+        <div class="p2p-form-weight" data-form-field="weight">0,0%</div>
+        <button class="p2p-delete" type="button" onclick="deleteP2PPlatformRow(this)">Eliminar</button>
+      </div>
+      <div class="p2p-form-row" data-platform-row="9">
+        <input class="p2p-form-input" data-form-field="platform" value="Monefit">
+        <input class="p2p-form-input" data-form-field="capital" inputmode="decimal" value="4954">
+        <input class="p2p-form-input" data-form-field="interest" inputmode="decimal" value="274">
+        <input class="p2p-form-input" data-form-field="cashback" inputmode="decimal" value="65">
+        <select class="p2p-form-select man" data-form-field="objective">
+          <option value="Aum" >Aum</option>
+          <option value="Red" >Red</option>
+          <option value="Man" selected>Man</option>
+        </select>
+        <div class="p2p-form-weight" data-form-field="weight">0,0%</div>
+        <button class="p2p-delete" type="button" onclick="deleteP2PPlatformRow(this)">Eliminar</button>
+      </div>
+      <div class="p2p-form-row" data-platform-row="10">
+        <input class="p2p-form-input" data-form-field="platform" value="Bondora">
+        <input class="p2p-form-input" data-form-field="capital" inputmode="decimal" value="13021">
+        <input class="p2p-form-input" data-form-field="interest" inputmode="decimal" value="40">
+        <input class="p2p-form-input" data-form-field="cashback" inputmode="decimal" value="5">
+        <select class="p2p-form-select aum" data-form-field="objective">
+          <option value="Aum" selected>Aum</option>
+          <option value="Red" >Red</option>
+          <option value="Man" >Man</option>
+        </select>
+        <div class="p2p-form-weight" data-form-field="weight">0,0%</div>
+        <button class="p2p-delete" type="button" onclick="deleteP2PPlatformRow(this)">Eliminar</button>
+      </div>
+      <div class="p2p-form-row" data-platform-row="11">
+        <input class="p2p-form-input" data-form-field="platform" value="Esketit">
+        <input class="p2p-form-input" data-form-field="capital" inputmode="decimal" value="18891">
+        <input class="p2p-form-input" data-form-field="interest" inputmode="decimal" value="2">
+        <input class="p2p-form-input" data-form-field="cashback" inputmode="decimal" value="0">
+        <select class="p2p-form-select man" data-form-field="objective">
+          <option value="Aum" >Aum</option>
+          <option value="Red" >Red</option>
+          <option value="Man" selected>Man</option>
+        </select>
+        <div class="p2p-form-weight" data-form-field="weight">0,0%</div>
+        <button class="p2p-delete" type="button" onclick="deleteP2PPlatformRow(this)">Eliminar</button>
+      </div>
+      <div class="p2p-form-row" data-platform-row="12">
+        <input class="p2p-form-input" data-form-field="platform" value="Modena">
+        <input class="p2p-form-input" data-form-field="capital" inputmode="decimal" value="5000">
+        <input class="p2p-form-input" data-form-field="interest" inputmode="decimal" value="0">
+        <input class="p2p-form-input" data-form-field="cashback" inputmode="decimal" value="0">
+        <select class="p2p-form-select man" data-form-field="objective">
+          <option value="Aum" >Aum</option>
+          <option value="Red" >Red</option>
+          <option value="Man" selected>Man</option>
+        </select>
+        <div class="p2p-form-weight" data-form-field="weight">0,0%</div>
+        <button class="p2p-delete" type="button" onclick="deleteP2PPlatformRow(this)">Eliminar</button>
+      </div></div>
+      <button class="p2p-add" type="button" onclick="addP2PPlatformRow()">Añadir plataforma</button>
+    </div>
+
+
+    
+      <div class="p2p-monthly-form" id="p2pMonthlyForm">
+        <h3 style="margin:0 0 26px 0;font-size:32px">Movimientos mensuales</h3>
+        <div class="p2p-monthly-head">
+          <div>Mes</div>
+          <div>Intereses</div>
+          <div>Cashback</div>
+          <div>Total ingresos</div>
+          <div></div>
+        </div>
+
+        <div id="p2pMonthlyRows">
+          
+      <div class="p2p-monthly-row" data-month-row="0">
+        <input class="p2p-monthly-input" data-month-field="month" value="Ene">
+        <input class="p2p-monthly-input" data-month-field="interest" inputmode="decimal" value="192">
+        <input class="p2p-monthly-input" data-month-field="cashback" inputmode="decimal" value="603">
+        <div class="p2p-monthly-total" data-month-field="total">0 €</div>
+        <button class="p2p-monthly-delete" type="button" onclick="deleteP2PMonthlyRow(this)">Eliminar</button>
+      </div>
+    
+      <div class="p2p-monthly-row" data-month-row="1">
+        <input class="p2p-monthly-input" data-month-field="month" value="Feb">
+        <input class="p2p-monthly-input" data-month-field="interest" inputmode="decimal" value="574">
+        <input class="p2p-monthly-input" data-month-field="cashback" inputmode="decimal" value="2521">
+        <div class="p2p-monthly-total" data-month-field="total">0 €</div>
+        <button class="p2p-monthly-delete" type="button" onclick="deleteP2PMonthlyRow(this)">Eliminar</button>
+      </div>
+    
+      <div class="p2p-monthly-row" data-month-row="2">
+        <input class="p2p-monthly-input" data-month-field="month" value="Mar">
+        <input class="p2p-monthly-input" data-month-field="interest" inputmode="decimal" value="1018">
+        <input class="p2p-monthly-input" data-month-field="cashback" inputmode="decimal" value="215">
+        <div class="p2p-monthly-total" data-month-field="total">0 €</div>
+        <button class="p2p-monthly-delete" type="button" onclick="deleteP2PMonthlyRow(this)">Eliminar</button>
+      </div>
+    
+      <div class="p2p-monthly-row" data-month-row="3">
+        <input class="p2p-monthly-input" data-month-field="month" value="Abr">
+        <input class="p2p-monthly-input" data-month-field="interest" inputmode="decimal" value="1421">
+        <input class="p2p-monthly-input" data-month-field="cashback" inputmode="decimal" value="81">
+        <div class="p2p-monthly-total" data-month-field="total">0 €</div>
+        <button class="p2p-monthly-delete" type="button" onclick="deleteP2PMonthlyRow(this)">Eliminar</button>
+      </div>
+    
+      <div class="p2p-monthly-row" data-month-row="4">
+        <input class="p2p-monthly-input" data-month-field="month" value="May">
+        <input class="p2p-monthly-input" data-month-field="interest" inputmode="decimal" value="487">
+        <input class="p2p-monthly-input" data-month-field="cashback" inputmode="decimal" value="655">
+        <div class="p2p-monthly-total" data-month-field="total">0 €</div>
+        <button class="p2p-monthly-delete" type="button" onclick="deleteP2PMonthlyRow(this)">Eliminar</button>
+      </div>
+    
+      <div class="p2p-monthly-row" data-month-row="5">
+        <input class="p2p-monthly-input" data-month-field="month" value="Jun">
+        <input class="p2p-monthly-input" data-month-field="interest" inputmode="decimal" value="0">
+        <input class="p2p-monthly-input" data-month-field="cashback" inputmode="decimal" value="0">
+        <div class="p2p-monthly-total" data-month-field="total">0 €</div>
+        <button class="p2p-monthly-delete" type="button" onclick="deleteP2PMonthlyRow(this)">Eliminar</button>
+      </div>
+    
+      <div class="p2p-monthly-row" data-month-row="6">
+        <input class="p2p-monthly-input" data-month-field="month" value="Jul">
+        <input class="p2p-monthly-input" data-month-field="interest" inputmode="decimal" value="0">
+        <input class="p2p-monthly-input" data-month-field="cashback" inputmode="decimal" value="0">
+        <div class="p2p-monthly-total" data-month-field="total">0 €</div>
+        <button class="p2p-monthly-delete" type="button" onclick="deleteP2PMonthlyRow(this)">Eliminar</button>
+      </div>
+    
+      <div class="p2p-monthly-row" data-month-row="7">
+        <input class="p2p-monthly-input" data-month-field="month" value="Ago">
+        <input class="p2p-monthly-input" data-month-field="interest" inputmode="decimal" value="0">
+        <input class="p2p-monthly-input" data-month-field="cashback" inputmode="decimal" value="0">
+        <div class="p2p-monthly-total" data-month-field="total">0 €</div>
+        <button class="p2p-monthly-delete" type="button" onclick="deleteP2PMonthlyRow(this)">Eliminar</button>
+      </div>
+    
+      <div class="p2p-monthly-row" data-month-row="8">
+        <input class="p2p-monthly-input" data-month-field="month" value="Sep">
+        <input class="p2p-monthly-input" data-month-field="interest" inputmode="decimal" value="0">
+        <input class="p2p-monthly-input" data-month-field="cashback" inputmode="decimal" value="0">
+        <div class="p2p-monthly-total" data-month-field="total">0 €</div>
+        <button class="p2p-monthly-delete" type="button" onclick="deleteP2PMonthlyRow(this)">Eliminar</button>
+      </div>
+    
+      <div class="p2p-monthly-row" data-month-row="9">
+        <input class="p2p-monthly-input" data-month-field="month" value="Oct">
+        <input class="p2p-monthly-input" data-month-field="interest" inputmode="decimal" value="0">
+        <input class="p2p-monthly-input" data-month-field="cashback" inputmode="decimal" value="0">
+        <div class="p2p-monthly-total" data-month-field="total">0 €</div>
+        <button class="p2p-monthly-delete" type="button" onclick="deleteP2PMonthlyRow(this)">Eliminar</button>
+      </div>
+    
+      <div class="p2p-monthly-row" data-month-row="10">
+        <input class="p2p-monthly-input" data-month-field="month" value="Nov">
+        <input class="p2p-monthly-input" data-month-field="interest" inputmode="decimal" value="0">
+        <input class="p2p-monthly-input" data-month-field="cashback" inputmode="decimal" value="0">
+        <div class="p2p-monthly-total" data-month-field="total">0 €</div>
+        <button class="p2p-monthly-delete" type="button" onclick="deleteP2PMonthlyRow(this)">Eliminar</button>
+      </div>
+    
+      <div class="p2p-monthly-row" data-month-row="11">
+        <input class="p2p-monthly-input" data-month-field="month" value="Dic">
+        <input class="p2p-monthly-input" data-month-field="interest" inputmode="decimal" value="0">
+        <input class="p2p-monthly-input" data-month-field="cashback" inputmode="decimal" value="0">
+        <div class="p2p-monthly-total" data-month-field="total">0 €</div>
+        <button class="p2p-monthly-delete" type="button" onclick="deleteP2PMonthlyRow(this)">Eliminar</button>
+      </div>
+    
+        </div>
+
+        <div class="p2p-monthly-total-row">
+          <div>Total</div>
+          <div id="p2pMonthlyTotalInterest">0 €</div>
+          <div id="p2pMonthlyTotalCashback">0 €</div>
+          <div id="p2pMonthlyGrandTotal">0 €</div>
+          <div></div>
+        </div>
+
+        <button class="p2p-monthly-add" type="button" onclick="addP2PMonthlyRow()">Añadir mes</button>
+      </div>
+
+
+    <div class="p2p-section-title">Análisis fiscal y proyección</div>
+    <div class="p2p-grid">
+      <div class="p2p-card">
+        <h3>Retenciones acumuladas YTD por plataforma (€) — Casilla 027 IRPF</h3>
+        
+      <div class="bar-row">
+        <div>Debitum</div>
+        <div class="bar-track"><div class="bar-fill" style="background:#8b5cf6;width:100.0%"></div></div>
+        <div><b>87€</b></div>
+      </div>
+      <div class="bar-row">
+        <div>Mintos</div>
+        <div class="bar-track"><div class="bar-fill" style="background:#8b5cf6;width:90.8%"></div></div>
+        <div><b>79€</b></div>
+      </div>
+      <div class="bar-row">
+        <div>Vianvest</div>
+        <div class="bar-track"><div class="bar-fill" style="background:#8b5cf6;width:74.7%"></div></div>
+        <div><b>65€</b></div>
+      </div>
+      <div class="bar-row">
+        <div>Maclear</div>
+        <div class="bar-track"><div class="bar-fill" style="background:#8b5cf6;width:79.3%"></div></div>
+        <div><b>69€</b></div>
+      </div>
+      <div class="bar-row">
+        <div>Hive-5</div>
+        <div class="bar-track"><div class="bar-fill" style="background:#8b5cf6;width:70.1%"></div></div>
+        <div><b>61€</b></div>
+      </div>
+      <div class="bar-row">
+        <div>Monefit</div>
+        <div class="bar-track"><div class="bar-fill" style="background:#8b5cf6;width:49.4%"></div></div>
+        <div><b>43€</b></div>
+      </div>
+      <div class="bar-row">
+        <div>Devon</div>
+        <div class="bar-track"><div class="bar-fill" style="background:#8b5cf6;width:62.1%"></div></div>
+        <div><b>54€</b></div>
+      </div>
+      <div class="bar-row">
+        <div>Ventus</div>
+        <div class="bar-track"><div class="bar-fill" style="background:#8b5cf6;width:47.1%"></div></div>
+        <div><b>41€</b></div>
+      </div>
+      <div class="bar-row">
+        <div>Forest</div>
+        <div class="bar-track"><div class="bar-fill" style="background:#8b5cf6;width:35.6%"></div></div>
+        <div><b>31€</b></div>
+      </div>
+      <div class="bar-row">
+        <div>Esketit</div>
+        <div class="bar-track"><div class="bar-fill" style="background:#8b5cf6;width:50.6%"></div></div>
+        <div><b>44€</b></div>
+      </div>
+      <div class="bar-row">
+        <div>Bondora</div>
+        <div class="bar-track"><div class="bar-fill" style="background:#8b5cf6;width:25.3%"></div></div>
+        <div><b>22€</b></div>
+      </div>
+      <div class="bar-row">
+        <div>Loanch</div>
+        <div class="bar-track"><div class="bar-fill" style="background:#8b5cf6;width:32.2%"></div></div>
+        <div><b>28€</b></div>
+      </div>
+      <div class="bar-row">
+        <div>Modena</div>
+        <div class="bar-track"><div class="bar-fill" style="background:#8b5cf6;width:10.3%"></div></div>
+        <div><b>9€</b></div>
+      </div>
+      </div>
+
+      <div class="p2p-card">
+        <h3>Calculadora de proyección a €200.000</h3>
+        <div class="slider-row">
+          <div>Aportación mensual (€)</div>
+          <input id="p2pAportacion" type="range" min="0" max="5000" step="100" value="2000" oninput="calcP2PProjection()">
+          <div><b id="p2pAportacionTxt">€2.000</b></div>
+        </div>
+        <div class="slider-row">
+          <div>Rentabilidad anual (%)</div>
+          <input id="p2pRentabilidad" type="range" min="1" max="18" step="0.1" value="10.5" oninput="calcP2PProjection()">
+          <div><b id="p2pRentabilidadTxt">10.5%</b></div>
+        </div>
+        <div class="p2p-summary-grid" style="margin-top:28px">
+          <div class="summary-box"><div class="summary-label">Meses restantes</div><div class="summary-value" id="p2pMeses">21 m</div></div>
+          <div class="summary-box"><div class="summary-label">Fecha estimada</div><div class="summary-value" id="p2pFecha">feb 2028</div></div>
+          <div class="summary-box"><div class="summary-label">Intereses totales</div><div class="summary-value" id="p2pIntereses">€29.674</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="inmueble" class="section"><div class="page"><div class="page-title">Inmueble</div><div class="tablebox"><p style="font-size:22px;font-weight:900">Valor actual: 310.000 € · Compra: 240.000 € · Alquiler: 1.098 €/mes</p></div></div></section>
+
+<section id="calculadora" class="section">
+  <div class="page">
+    <div class="page-title">Calculadora</div>
+
+    <div class="calc-wrap">
+      <div class="calc-card">
+        <h3>Calculadora de interés simple y compuesto</h3>
+        <div class="calc-help">Simula crecimiento con capital inicial, aportación mensual, interés anual y plazo. El interés compuesto se calcula con capitalización mensual y aportaciones al final de cada mes.</div>
+
+        <div class="calc-row">
+          <label>Capital inicial</label>
+          <input id="calcCapitalInicial" class="calc-input" inputmode="decimal" value="138.927">
+        </div>
+        <div class="calc-row">
+          <label>Aportación mensual</label>
+          <input id="calcAportacionMensual" class="calc-input" inputmode="decimal" value="500">
+        </div>
+        <div class="calc-row">
+          <label>Interés anual estimado (%)</label>
+          <input id="calcInteresAnual" class="calc-input" inputmode="decimal" value="10">
+        </div>
+        <div class="calc-row">
+          <label>Plazo en años</label>
+          <input id="calcAnos" class="calc-input" inputmode="decimal" value="10">
+        </div>
+
+        <button class="calc-btn" type="button" onclick="calcularInteresPro()">Calcular</button>
+        <div class="calc-help" style="margin-top:18px">Útil para comparar escenarios: por ejemplo, cuánto crecería tu cartera P2P si reinviertes intereses y añades una aportación fija mensual.</div>
+      </div>
+
+      <div class="calc-card">
+        <h3>Resultado de la simulación</h3>
+        <div class="calc-result-grid">
+          <div class="calc-result-box">
+            <div class="calc-result-label">Capital aportado</div>
+            <div class="calc-result-value" id="calcCapitalAportado">0 €</div>
+          </div>
+          <div class="calc-result-box">
+            <div class="calc-result-label">Interés simple</div>
+            <div class="calc-result-value" id="calcInteresSimple">0 €</div>
+            <div class="calc-result-sub" id="calcInteresSimpleSub">Intereses: 0 €</div>
+          </div>
+          <div class="calc-result-box">
+            <div class="calc-result-label">Interés compuesto</div>
+            <div class="calc-result-value" id="calcInteresCompuesto">0 €</div>
+            <div class="calc-result-sub" id="calcInteresCompuestoSub">Intereses: 0 €</div>
+          </div>
+          <div class="calc-result-box">
+            <div class="calc-result-label">Diferencia compuesto vs simple</div>
+            <div class="calc-result-value" id="calcDiferencia">0 €</div>
+          </div>
+          <div class="calc-result-box">
+            <div class="calc-result-label">Ingreso medio mensual estimado</div>
+            <div class="calc-result-value" id="calcIngresoMedio">0 €</div>
+          </div>
+          <div class="calc-result-box">
+            <div class="calc-result-label">Años simulados</div>
+            <div class="calc-result-value" id="calcAnosResultado">0 años</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-card calc-chart-card">
+      <h3>Evolución estimada</h3>
+      <div class="calc-legend">
+        <span style="--c:#3ba7df">Interés simple</span>
+        <span style="--c:#ff5c8a">Interés compuesto</span>
+      </div>
+      <svg id="calcChartSvg" class="calc-chart-svg" viewBox="0 0 1200 500"></svg>
+    </div>
+  </div>
+</section>
+
+
+</div>
+<script>
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.sec).classList.add('active');
+    window.scrollTo(0,0);
+  });
+});
+
+const TABLA_MENSUAL_V5_DEFAULTS = [
+[0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0]
+];
+
+function numberV5(x){
+  return Number(String(x).replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.')) || 0;
+}
+function fmtV5(x){
+  return new Intl.NumberFormat('es-ES', {maximumFractionDigits:0}).format(x);
+}
+function recalcularTablaMensualV5(){
+  const table = document.getElementById('tablaMensualV5');
+  if(!table) return;
+  table.querySelectorAll('tbody tr').forEach(row=>{
+    let total = 0;
+    row.querySelectorAll('.money-input-v5').forEach(input=>{
+      total += numberV5(input.value);
+    });
+    const totalCell = row.querySelector('.row-total-v5');
+    if(totalCell) totalCell.textContent = fmtV5(total) + ' €';
+  });
+}
+function guardarTablaMensualV5(){
+  const data = [];
+  document.querySelectorAll('#tablaMensualV5 tbody tr').forEach(row=>{
+    const rowData = [];
+    row.querySelectorAll('.money-input-v5').forEach(input=>{
+      const n = numberV5(input.value);
+      input.value = fmtV5(n);
+      rowData.push(n);
+    });
+    data.push(rowData);
+  });
+  localStorage.setItem('SERGIO_TABLA_MENSUAL_V5', JSON.stringify(data));
+  recalcularTablaMensualV5();
+  const status = document.getElementById('saveStatusV5');
+  if(status) status.textContent = '✅ Cambios guardados en este navegador';
+}
+function cargarTablaMensualV5(){
+  let data = TABLA_MENSUAL_V5_DEFAULTS;
+  try{
+    const saved = localStorage.getItem('SERGIO_TABLA_MENSUAL_V5');
+    if(saved) data = JSON.parse(saved);
+  }catch(e){}
+  document.querySelectorAll('#tablaMensualV5 tbody tr').forEach((row,r)=>{
+    row.querySelectorAll('.money-input-v5').forEach((input,c)=>{
+      input.value = fmtV5(data[r][c]);
+      input.addEventListener('focus', ()=>{
+        input.value = String(numberV5(input.value));
+        setTimeout(()=>input.select(), 0);
+      });
+      input.addEventListener('input', ()=>{
+        recalcularTablaMensualV5();
+        const status = document.getElementById('saveStatusV5');
+        if(status) status.textContent = 'Cambios sin guardar';
+      });
+      input.addEventListener('blur', ()=>{
+        input.value = fmtV5(numberV5(input.value));
+        recalcularTablaMensualV5();
+      });
+    });
+  });
+  recalcularTablaMensualV5();
+}
+function resetTablaMensualV5(){
+  localStorage.removeItem('SERGIO_TABLA_MENSUAL_V5');
+  cargarTablaMensualV5();
+  const status = document.getElementById('saveStatusV5');
+  if(status) status.textContent = 'Datos iniciales restaurados';
+}
+cargarTablaMensualV5();
+
+
+function actualizarResumenDesdeTabla(){
+  const table = document.getElementById('tablaMensualV5');
+  if(!table) return;
+
+  const rows = [...table.querySelectorAll('tbody tr')];
+  const data = rows.map(row => [...row.querySelectorAll('.money-input-v5')].map(input => numberV5(input.value)));
+
+  if(!data.length) return;
+
+  const last = data[data.length - 1];
+  const first = data[0];
+
+  const rv = last[0], p2p = last[1], inmueble = last[2], mp = last[3], cripto = last[4], bonos = last[5], cash = last[6];
+  const patrimonioTotal = rv + p2p + inmueble + mp + cripto + bonos + cash;
+  const capitalInvertible = rv + p2p + mp + cripto + bonos + cash;
+
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = value;
+  };
+
+  setText('kpiPatrimonioTotal', fmtV5(patrimonioTotal) + ' €');
+  setText('kpiCapitalInvertible', fmtV5(capitalInvertible) + ' €');
+  setText('donutTotalInvertible', fmtV5(capitalInvertible) + ' €');
+  setText('legendTotalInvertible', fmtV5(capitalInvertible) + ' €');
+
+  setText('legendRV', fmtV5(rv) + ' €');
+  setText('legendP2P', fmtV5(p2p) + ' €');
+  setText('legendCripto', fmtV5(cripto) + ' €');
+  setText('legendMP', fmtV5(mp) + ' €');
+  setText('legendBonos', fmtV5(bonos) + ' €');
+  setText('legendCash', fmtV5(cash) + ' €');
+
+  const pct = v => capitalInvertible > 0 ? (v / capitalInvertible * 100) : 0;
+  const pRV = pct(rv), pP2P = pct(p2p), pCripto = pct(cripto), pMP = pct(mp), pBonos = pct(bonos), pCash = pct(cash);
+
+  setText('pctRV', pRV.toFixed(2).replace('.', ',') + '%');
+  setText('pctP2P', pP2P.toFixed(2).replace('.', ',') + '%');
+  setText('pctCripto', pCripto.toFixed(2).replace('.', ',') + '%');
+  setText('pctMP', pMP.toFixed(2).replace('.', ',') + '%');
+  setText('pctBonos', pBonos.toFixed(2).replace('.', ',') + '%');
+  setText('pctCash', pCash.toFixed(2).replace('.', ',') + '%');
+
+  const donut = document.querySelector('.donut');
+  if(donut){
+    let a = pRV;
+    let b = a + pP2P;
+    let c = b + pCripto;
+    let d = c + pMP;
+    let e = d + pBonos;
+    donut.style.setProperty('--pct-rv', a + '%');
+    donut.style.setProperty('--pct-p2p-end', b + '%');
+    donut.style.setProperty('--pct-crypto-end', c + '%');
+    donut.style.setProperty('--pct-mp-end', d + '%');
+    donut.style.setProperty('--pct-bonos-end', e + '%');
+  }
+
+  const totals = data.map(r => r.reduce((a,b)=>a+b,0));
+  actualizarGraficoPatrimonio(totals);
+
+  const ytdAbs = totals[totals.length - 1] - totals[0];
+  const ytdPct = totals[0] ? (ytdAbs / totals[0] * 100) : 0;
+  setText('evolucionYTD', 'Evolución YTD: ' + 
+    (ytdPct >= 0 ? '+' : '') + ytdPct.toFixed(2).replace('.', ',') + 
+    '% (' + (ytdAbs >= 0 ? '+' : '') + fmtV5(ytdAbs) + ' €)'
+  );
+
+  actualizarAlertasDinamicas({rv,p2p,inmueble,mp,cripto,bonos,cash,capitalInvertible,patrimonioTotal,pRV,pP2P,pCripto,pMP,pBonos,pCash});
+}
+
+function actualizarGraficoPatrimonio(totals){
+  const line = document.getElementById('wealthLine');
+  const area = document.getElementById('wealthArea');
+  const pointsGroup = document.getElementById('wealthPoints');
+  if(!line || !area || !pointsGroup || !totals.length) return;
+
+  const min = Math.min(...totals);
+  const max = Math.max(...totals);
+  const pad = Math.max((max - min) * 0.12, 5000);
+  const yMin = min - pad;
+  const yMax = max + pad;
+
+  const x0 = 70, x1 = 740, yTop = 35, yBottom = 295;
+  const step = (x1 - x0) / (totals.length - 1 || 1);
+  const yOf = v => yBottom - ((v - yMin) / (yMax - yMin || 1)) * (yBottom - yTop);
+
+  const coords = totals.map((v,i)=>[x0 + i*step, yOf(v)]);
+  const dLine = coords.map((p,i)=> (i ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  line.setAttribute('d', dLine);
+  area.setAttribute('d', dLine + ` L ${x1},${yBottom} L ${x0},${yBottom} Z`);
+
+  pointsGroup.innerHTML = coords.map(([x,y])=>`<circle class="point" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6"/>`).join('');
+
+  for(let i=0;i<5;i++){
+    const label = document.getElementById('yLabel' + i);
+    if(label){
+      const val = yMax - ((yMax-yMin)/4)*i;
+      label.textContent = fmtV5(Math.round(val/1000)*1000);
+    }
+  }
+}
+
+function actualizarAlertasDinamicas(s){
+  const box = document.getElementById('alertasDinamicas');
+  if(!box) return;
+  const alerts = [];
+
+  if(s.pP2P > 40) alerts.push(`⚠ P2P sobreponderado: ${s.pP2P.toFixed(1).replace('.', ',')}% del capital invertible.`);
+  if(s.pRV < 35) alerts.push(`↑ Renta variable por debajo del objetivo: ${s.pRV.toFixed(1).replace('.', ',')}%.`);
+  if(s.pCash < 3) alerts.push(`⚠ Efectivo bajo: ${s.pCash.toFixed(1).replace('.', ',')}%.`);
+  if(s.pCash > 10) alerts.push(`ℹ Efectivo alto: puede haber capital parado.`);
+  if(s.pCripto > 12) alerts.push(`⚠ Cripto por encima del 12%: revisar volatilidad.`);
+  if(!alerts.length) alerts.push('✅ Cartera sin alertas críticas. Mantener seguimiento mensual.');
+
+  box.innerHTML = alerts.slice(0,2).map(t => `<div class="info-line"><span class="warning">${t.startsWith('✅') ? '✓' : '⚠'}</span>${t}</div>`).join('');
+}
+
+// Enlazar con funciones existentes
+const _oldRecalcularTablaMensualV5 = typeof recalcularTablaMensualV5 === 'function' ? recalcularTablaMensualV5 : null;
+if(_oldRecalcularTablaMensualV5){
+  recalcularTablaMensualV5 = function(){
+    _oldRecalcularTablaMensualV5();
+    actualizarResumenDesdeTabla();
+  }
+}
+
+const _oldGuardarTablaMensualV5 = typeof guardarTablaMensualV5 === 'function' ? guardarTablaMensualV5 : null;
+if(_oldGuardarTablaMensualV5){
+  guardarTablaMensualV5 = function(){
+    _oldGuardarTablaMensualV5();
+    actualizarResumenDesdeTabla();
+  }
+}
+
+setTimeout(actualizarResumenDesdeTabla, 100);
+
+
+/* ===== AUTOESCALADO PARA VER TODO EL DASHBOARD ===== */
+function ajustarZoomDashboard(){
+  const stage = document.getElementById('stage');
+  if(!stage) return;
+
+  const baseW = 1500;
+  const baseH = 1020;
+
+  const margenW = 16;
+  const margenH = 16;
+
+  const scaleW = (window.innerWidth - margenW) / baseW;
+
+  // Versión estable para iPad/Safari:
+  // ajusta al ancho y deja scroll vertical normal.
+  // Es más grande que la versión anterior y evita recalcular por altura.
+  const scale = Math.min(scaleW, 1);
+
+  stage.style.transform = `scale(${scale})`;
+  stage.style.width = baseW + 'px';
+  stage.style.height = baseH + 'px';
+
+  document.body.style.width = '100%';
+  document.body.style.minHeight = (baseH * scale + 40) + 'px';
+  document.documentElement.style.minHeight = (baseH * scale + 40) + 'px';
+}
+window.addEventListener('resize', ajustarZoomDashboard);
+window.addEventListener('orientationchange', ajustarZoomDashboard);
+setTimeout(ajustarZoomDashboard, 50);
+setTimeout(ajustarZoomDashboard, 500);
+
+
+/* ===== V9: COPIAR VALOR ANTERIOR REAL Y VISIBLE ===== */
+function v9Number(value){
+  return Number(String(value || '').replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.')) || 0;
+}
+function v9Fmt(value){
+  return new Intl.NumberFormat('es-ES', {maximumFractionDigits:0}).format(value);
+}
+function v9GetTable(){
+  return document.getElementById('tablaMensualV5');
+}
+function v9CellKey(input){
+  return `SERGIO_V9_${input.dataset.row}_${input.dataset.col}`;
+}
+function v9MarkManual(input){
+  input.dataset.manual = "1";
+  input.classList.add('manual-filled');
+  input.classList.remove('auto-filled');
+}
+function v9MarkAuto(input){
+  input.dataset.manual = "0";
+  input.classList.add('auto-filled');
+  input.classList.remove('manual-filled');
+}
+function v9ReadManualData(){
+  const table = v9GetTable();
+  if(!table) return;
+  table.querySelectorAll('.money-input-v5').forEach(input=>{
+    const saved = localStorage.getItem(v9CellKey(input));
+    if(saved !== null){
+      const obj = JSON.parse(saved);
+      input.value = obj.value;
+      input.dataset.manual = obj.manual ? "1" : "0";
+      if(obj.manual) v9MarkManual(input); else v9MarkAuto(input);
+    }else{
+      input.value = "0";
+      input.dataset.manual = "0";
+      input.classList.remove('manual-filled','auto-filled');
+    }
+  });
+}
+function v9SaveCell(input){
+  localStorage.setItem(v9CellKey(input), JSON.stringify({
+    value: input.value,
+    manual: input.dataset.manual === "1"
+  }));
+}
+function v9FillDownFrom(rowIndex, colIndex){
+  const table = v9GetTable();
+  if(!table) return;
+
+  let previous = 0;
+
+  for(let r=0; r<12; r++){
+    const input = table.querySelector(`.money-input-v5[data-row="${r}"][data-col="${colIndex}"]`);
+    if(!input) continue;
+
+    const isManual = input.dataset.manual === "1";
+    const value = v9Number(input.value);
+
+    if(isManual && value !== 0){
+      previous = value;
+      input.value = v9Fmt(value);
+      v9MarkManual(input);
+      v9SaveCell(input);
+      continue;
+    }
+
+    if(r > 0 && previous !== 0){
+      input.value = v9Fmt(previous);
+      v9MarkAuto(input);
+      v9SaveCell(input);
+    }else if(!isManual){
+      input.value = "0";
+      input.dataset.manual = "0";
+      input.classList.remove('manual-filled','auto-filled');
+      v9SaveCell(input);
+    }
+  }
+}
+function v9FillAllColumns(){
+  for(let c=0; c<7; c++) v9FillDownFrom(0,c);
+  v9RecalculateTotalsAndSummary();
+}
+function v9GetEffectiveData(){
+  const table = v9GetTable();
+  if(!table) return [];
+  const rows = [];
+  table.querySelectorAll('tbody tr').forEach(row=>{
+    rows.push([...row.querySelectorAll('.money-input-v5')].map(input=>v9Number(input.value)));
+  });
+  return rows;
+}
+function v9RecalculateTotalsAndSummary(){
+  const table = v9GetTable();
+  if(!table) return;
+
+  const data = v9GetEffectiveData();
+  table.querySelectorAll('tbody tr').forEach((row,r)=>{
+    const total = data[r] ? data[r].reduce((a,b)=>a+b,0) : 0;
+    const cell = row.querySelector('.row-total-v5');
+    if(cell) cell.textContent = v9Fmt(total) + ' €';
+  });
+
+  if(typeof actualizarResumenDesdeTabla === 'function'){
+    actualizarResumenDesdeTabla();
+  }
+}
+function v9Init(){
+  const table = v9GetTable();
+  if(!table) return;
+
+  // Deja todo a 0 por defecto si no hay datos guardados V9
+  v9ReadManualData();
+
+  table.querySelectorAll('.money-input-v5').forEach(input=>{
+    input.addEventListener('focus', ()=>{
+      input.value = String(v9Number(input.value));
+      setTimeout(()=>input.select(), 0);
+    });
+
+    input.addEventListener('input', ()=>{
+      v9MarkManual(input);
+      v9SaveCell(input);
+      v9FillDownFrom(Number(input.dataset.row), Number(input.dataset.col));
+      v9RecalculateTotalsAndSummary();
+      const status = document.getElementById('saveStatusV5');
+      if(status) status.textContent = 'Cambios aplicados automáticamente';
+    });
+
+    input.addEventListener('blur', ()=>{
+      const n = v9Number(input.value);
+      if(n === 0){
+        input.value = "0";
+        input.dataset.manual = "0";
+        input.classList.remove('manual-filled','auto-filled');
+      }else{
+        input.value = v9Fmt(n);
+        v9MarkManual(input);
+      }
+      v9SaveCell(input);
+      v9FillDownFrom(Number(input.dataset.row), Number(input.dataset.col));
+      v9RecalculateTotalsAndSummary();
+    });
+  });
+
+  v9FillAllColumns();
+
+  const status = document.getElementById('saveStatusV5');
+  if(status) status.textContent = 'Modo V9 activo: cada celda copia la anterior';
+}
+
+// Pisar función de reset para dejar todo limpio a 0
+function resetTablaMensualV5(){
+  Object.keys(localStorage).forEach(k=>{
+    if(k.startsWith('SERGIO_V9_') || k.startsWith('SERGIO_TABLA_MENSUAL_V5') || k.startsWith('sergio_dashboard_mensual_input_')){
+      localStorage.removeItem(k);
+    }
+  });
+  const table = v9GetTable();
+  if(table){
+    table.querySelectorAll('.money-input-v5').forEach(input=>{
+      input.value = "0";
+      input.dataset.manual = "0";
+      input.classList.remove('manual-filled','auto-filled');
+    });
+  }
+  v9RecalculateTotalsAndSummary();
+  const status = document.getElementById('saveStatusV5');
+  if(status) status.textContent = 'Datos reiniciados a 0';
+}
+
+// Pisar guardar para que guarde estado V9
+function guardarTablaMensualV5(){
+  const table = v9GetTable();
+  if(!table) return;
+  table.querySelectorAll('.money-input-v5').forEach(input=>v9SaveCell(input));
+  v9RecalculateTotalsAndSummary();
+  const status = document.getElementById('saveStatusV5');
+  if(status) status.textContent = '✅ Cambios guardados';
+}
+
+// Pisar actualizarResumenDesdeTabla para que use la tabla visible V9
+const actualizarResumenDesdeTablaOriginalV9 = typeof actualizarResumenDesdeTabla === 'function' ? actualizarResumenDesdeTabla : null;
+actualizarResumenDesdeTabla = function(){
+  const table = v9GetTable();
+  if(!table || !actualizarResumenDesdeTablaOriginalV9){
+    return;
+  }
+
+  // La función original ya lee inputs visibles. Como V9 ya ha rellenado visualmente,
+  // basta con llamarla.
+  actualizarResumenDesdeTablaOriginalV9();
+};
+
+setTimeout(v9Init, 300);
+
+
+/* ===== TABLA INGRESOS PASIVOS ===== */
+function passNum(value){
+  return Number(String(value || '').replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.')) || 0;
+}
+function passFmt(value){
+  return new Intl.NumberFormat('es-ES', {maximumFractionDigits:0}).format(value);
+}
+function passTable(){
+  return document.getElementById('tablaIngresosPasivos');
+}
+function passKey(input){
+  return `SERGIO_PASSIVE_${input.dataset.passRow}_${input.dataset.passCol}`;
+}
+function passMarkManual(input){
+  input.dataset.manual = "1";
+  input.classList.add('manual-filled');
+  input.classList.remove('auto-filled');
+}
+function passMarkAuto(input){
+  input.dataset.manual = "0";
+  input.classList.add('auto-filled');
+  input.classList.remove('manual-filled');
+}
+function passSaveCell(input){
+  localStorage.setItem(passKey(input), JSON.stringify({
+    value: input.value,
+    manual: input.dataset.manual === "1"
+  }));
+}
+function passLoad(){
+  const table = passTable();
+  if(!table) return;
+  table.querySelectorAll('.passive-input').forEach(input=>{
+    const saved = localStorage.getItem(passKey(input));
+    if(saved){
+      try{
+        const obj = JSON.parse(saved);
+        input.value = obj.value;
+        input.dataset.manual = obj.manual ? "1" : "0";
+        if(obj.manual) passMarkManual(input); else passMarkAuto(input);
+      }catch(e){
+        input.value = "0";
+      }
+    }else{
+      input.value = "0";
+      input.dataset.manual = "0";
+      input.classList.remove('manual-filled','auto-filled');
+    }
+  });
+}
+function passFillDownCol(col){
+  const table = passTable();
+  if(!table) return;
+
+  let previous = 0;
+  for(let r=0; r<12; r++){
+    const input = table.querySelector(`.passive-input[data-pass-row="${r}"][data-pass-col="${col}"]`);
+    if(!input) continue;
+
+    const manual = input.dataset.manual === "1";
+    const value = passNum(input.value);
+
+    if(manual && value !== 0){
+      previous = value;
+      input.value = passFmt(value);
+      passMarkManual(input);
+      passSaveCell(input);
+    }else if(r > 0 && previous !== 0){
+      input.value = passFmt(previous);
+      passMarkAuto(input);
+      passSaveCell(input);
+    }else if(!manual){
+      input.value = "0";
+      input.dataset.manual = "0";
+      input.classList.remove('manual-filled','auto-filled');
+      passSaveCell(input);
+    }
+  }
+}
+function passFillAll(){
+  for(let c=0; c<4; c++) passFillDownCol(c);
+  passRecalc();
+}
+function passData(){
+  const table = passTable();
+  if(!table) return [];
+  return [...table.querySelectorAll('tbody tr')].map(row =>
+    [...row.querySelectorAll('.passive-input')].map(input => passNum(input.value))
+  );
+}
+
+function passRecalc(){
+  const table = passTable();
+  if(!table) return;
+
+  const data = passData();
+  const totals = [];
+
+  table.querySelectorAll('tbody tr').forEach((row,r)=>{
+    const total = data[r] ? data[r].reduce((a,b)=>a+b,0) : 0;
+    totals.push(total);
+    const cell = row.querySelector('.passive-row-total');
+    if(cell) cell.textContent = passFmt(total) + ' €';
+  });
+
+  const totalYTD = totals.reduce((a,b)=>a+b,0);
+
+  // Media YTD positiva: solo meses con ingresos > 0
+  const activeMonths = totals.filter(v=>v>0);
+  const media = activeMonths.length ? totalYTD / activeMonths.length : 0;
+  const mejor = activeMonths.length ? Math.max(...activeMonths) : 0;
+  const ultimo = [...totals].reverse().find(v=>v>0) || 0;
+
+  const set = (id,v)=>{ 
+    const el=document.getElementById(id); 
+    if(el) el.textContent=passFmt(v)+' €'; 
+  };
+
+  // Resumen interno de la pestaña Ingresos pasivos
+  set('passiveTotalYTD', totalYTD);
+  set('passiveMediaMensual', media);
+  set('passiveMejorMes', mejor);
+  set('passiveUltimoMes', ultimo);
+
+  // KPIs principales del Resumen
+  set('kpiIngresosPasivosYTD', totalYTD);
+  set('kpiIngresoMensualMedio', media);
+
+  const sub = document.getElementById('kpiIngresosPasivosSub');
+  if(sub) sub.textContent = 'Media mensual: ' + passFmt(media) + ' €';
+
+  // Guardamos una copia para que el resumen lo recupere al cargar
+  localStorage.setItem('SERGIO_KPI_PASSIVE_YTD', String(totalYTD));
+  localStorage.setItem('SERGIO_KPI_PASSIVE_MEDIA', String(media));
+}
+
+function guardarIngresosPasivos(){
+  const table = passTable();
+  if(!table) return;
+  table.querySelectorAll('.passive-input').forEach(input=>passSaveCell(input));
+  passRecalc();
+  const status = document.getElementById('passiveStatus');
+  if(status) status.textContent = '✅ Cambios guardados';
+}
+function resetIngresosPasivos(){
+  Object.keys(localStorage).forEach(k=>{
+    if(k.startsWith('SERGIO_PASSIVE_')) localStorage.removeItem(k);
+  });
+  const table = passTable();
+  if(table){
+    table.querySelectorAll('.passive-input').forEach(input=>{
+      input.value = "0";
+      input.dataset.manual = "0";
+      input.classList.remove('manual-filled','auto-filled');
+    });
+  }
+  passRecalc();
+  const status = document.getElementById('passiveStatus');
+  if(status) status.textContent = 'Datos iniciales restaurados a 0';
+}
+function initIngresosPasivos(){
+  const table = passTable();
+  if(!table) return;
+  passLoad();
+
+  table.querySelectorAll('.passive-input').forEach(input=>{
+    input.addEventListener('focus', ()=>{
+      input.value = String(passNum(input.value));
+      setTimeout(()=>input.select(), 0);
+    });
+    input.addEventListener('input', ()=>{
+      passMarkManual(input);
+      passSaveCell(input);
+      passFillDownCol(Number(input.dataset.passCol));
+      passRecalc();
+      const status = document.getElementById('passiveStatus');
+      if(status) status.textContent = 'Cambios aplicados automáticamente';
+    });
+    input.addEventListener('blur', ()=>{
+      const n = passNum(input.value);
+      if(n === 0){
+        input.value = "0";
+        input.dataset.manual = "0";
+        input.classList.remove('manual-filled','auto-filled');
+      }else{
+        input.value = passFmt(n);
+        passMarkManual(input);
+      }
+      passSaveCell(input);
+      passFillDownCol(Number(input.dataset.passCol));
+      passRecalc();
+    });
+  });
+
+  passFillAll();
+}
+setTimeout(initIngresosPasivos, 350);
+
+
+/* ===== CALCULADORA P2P ===== */
+function calcP2PProjection(){
+  const aport = Number(document.getElementById('p2pAportacion')?.value || 2000);
+  const rent = Number(document.getElementById('p2pRentabilidad')?.value || 10.5);
+  const capitalActual = 83000;
+  const objetivo = 200000;
+  const r = rent / 100 / 12;
+  let capital = capitalActual;
+  let meses = 0;
+  let intereses = 0;
+
+  while(capital < objetivo && meses < 600){
+    const interesMes = capital * r;
+    intereses += interesMes;
+    capital += interesMes + aport;
+    meses++;
+  }
+
+  const fecha = new Date();
+  fecha.setMonth(fecha.getMonth() + meses);
+  const mesTxt = fecha.toLocaleString('es-ES', {month:'short'}).replace('.', '');
+  const yearTxt = fecha.getFullYear();
+
+  const fmt = n => new Intl.NumberFormat('es-ES', {maximumFractionDigits:0}).format(n);
+  const aportTxt = document.getElementById('p2pAportacionTxt');
+  const rentTxt = document.getElementById('p2pRentabilidadTxt');
+  const mesesTxt = document.getElementById('p2pMeses');
+  const fechaTxt = document.getElementById('p2pFecha');
+  const interesesTxt = document.getElementById('p2pIntereses');
+
+  if(aportTxt) aportTxt.textContent = '€' + fmt(aport);
+  if(rentTxt) rentTxt.textContent = String(rent).replace('.', ',') + '%';
+  if(mesesTxt) mesesTxt.textContent = meses + ' m';
+  if(fechaTxt) fechaTxt.textContent = mesTxt + ' ' + yearTxt;
+  if(interesesTxt) interesesTxt.textContent = '€' + fmt(intereses);
+}
+setTimeout(calcP2PProjection, 400);
+
+
+/* ===== SINCRONIZAR KPIS DEL RESUMEN CON INGRESOS PASIVOS ===== */
+function syncPassiveKPIsFromStorage(){
+  const ytd = Number(localStorage.getItem('SERGIO_KPI_PASSIVE_YTD') || 0);
+  const media = Number(localStorage.getItem('SERGIO_KPI_PASSIVE_MEDIA') || 0);
+  const fmt = n => new Intl.NumberFormat('es-ES', {maximumFractionDigits:0}).format(n) + ' €';
+
+  const ytdEl = document.getElementById('kpiIngresosPasivosYTD');
+  const mediaEl = document.getElementById('kpiIngresoMensualMedio');
+  const sub = document.getElementById('kpiIngresosPasivosSub');
+
+  if(ytdEl) ytdEl.textContent = fmt(ytd);
+  if(mediaEl) mediaEl.textContent = fmt(media);
+  if(sub) sub.textContent = 'Media mensual: ' + fmt(media);
+}
+
+// Al cargar, primero intentamos calcular desde la tabla. Si aún no existe, usamos localStorage.
+setTimeout(()=>{
+  if(typeof passRecalc === 'function') passRecalc();
+  else syncPassiveKPIsFromStorage();
+}, 700);
+
+
+/* ===== P2P EDITABLE TABLE ===== */
+const P2P_DEFAULT_DATA = [
+  ["Debitum","Letonia",10200,514,12.1,30,87,512,"Activa"],
+  ["Mintos","Letonia",9800,466,11.4,45,79,467,"Activa"],
+  ["Vianvest","Letonia",8500,390,11.0,20,65,393,"Activa"],
+  ["Maclear","Estonia",7400,407,13.2,0,69,436,"Activa"],
+  ["Hive-5","Lituania",6900,397,13.8,15,61,427,"Activa"],
+  ["Monefit","Estonia",6200,264,10.2,50,43,282,"Activa"],
+  ["Devon","Croacia",8100,331,9.8,0,54,334,"Activa"],
+  ["Ventus","Lituania",5800,254,10.5,10,41,271,"Activa"],
+  ["Forest","Bulgaria",5100,196,9.2,0,31,197,"Activa"],
+  ["Esketit","Chipre",5400,266,11.8,25,44,284,"Activa"],
+  ["Bondora","Estonia",4200,147,8.4,0,22,148,"Activa"],
+  ["Loanch","Lituania",3600,164,10.9,0,28,165,"Activa"],
+  ["Modena","Italia",1800,61,8.1,0,9,61,"Activa"]
+];
+function p2pNum(v){
+  return Number(String(v || '').replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.')) || 0;
+}
+function p2pFmt(n){
+  return new Intl.NumberFormat('es-ES', {maximumFractionDigits:0}).format(n);
+}
+function p2pTable(){
+  return document.getElementById('tablaP2PEditable');
+}
+function getP2PData(){
+  const table = p2pTable();
+  if(!table) return [];
+  return [...table.querySelectorAll('tbody tr[data-p2p-row]')].map(row => {
+    const get = f => row.querySelector(`[data-p2p-field="${f}"]`)?.value || '';
+    return {
+      platform:get('platform'),
+      country:get('country'),
+      capital:p2pNum(get('capital')),
+      interest:p2pNum(get('interest')),
+      tae:p2pNum(get('tae')),
+      cashback:p2pNum(get('cashback')),
+      retention:p2pNum(get('retention')),
+      pg:p2pNum(get('pg')),
+      status:get('status')
+    };
+  });
+}
+function setP2PData(data){
+  const table = p2pTable();
+  if(!table) return;
+  table.querySelectorAll('tbody tr[data-p2p-row]').forEach((row,i)=>{
+    const d = data[i];
+    if(!d) return;
+    const set = (f,v)=>{ const el=row.querySelector(`[data-p2p-field="${f}"]`); if(el) el.value=v; };
+    set('platform', d[0] ?? d.platform);
+    set('country', d[1] ?? d.country);
+    set('capital', p2pFmt(d[2] ?? d.capital));
+    set('interest', p2pFmt(d[3] ?? d.interest));
+    set('tae', String(d[4] ?? d.tae).replace('.', ','));
+    set('cashback', p2pFmt(d[5] ?? d.cashback));
+    set('retention', p2pFmt(d[6] ?? d.retention));
+    set('pg', p2pFmt(d[7] ?? d.pg));
+    set('status', d[8] ?? d.status);
+  });
+}
+function recalcP2PTable(){
+  const data = getP2PData();
+  const sum = key => data.reduce((a,b)=>a+(b[key]||0),0);
+  const cap = sum('capital');
+  const interest = sum('interest');
+  const cashback = sum('cashback');
+  const retention = sum('retention');
+  const pg = sum('pg');
+  const avgTAE = cap ? data.reduce((a,b)=>a + b.tae*b.capital,0)/cap : 0;
+
+  const set = (id,txt)=>{ const el=document.getElementById(id); if(el) el.textContent=txt; };
+  set('p2pTotalCapital', p2pFmt(cap)+'€');
+  set('p2pTotalInterest', p2pFmt(interest)+'€');
+  set('p2pAvgTAE', avgTAE ? avgTAE.toFixed(1).replace('.', ',')+'%' : '—');
+  set('p2pTotalCashback', p2pFmt(cashback)+'€');
+  set('p2pTotalRetention', p2pFmt(retention)+'€');
+  set('p2pTotalPG', '+'+p2pFmt(pg)+'€');
+
+  // Actualiza calculadora P2P con capital real si existe función
+  localStorage.setItem('SERGIO_P2P_CAPITAL_TOTAL', String(cap));
+}
+function saveP2PTable(){
+  const data = getP2PData();
+  localStorage.setItem('SERGIO_P2P_EDITABLE_DATA', JSON.stringify(data));
+  recalcP2PTable();
+  const status = document.getElementById('p2pEditStatus');
+  if(status) status.textContent = '✅ Cambios guardados';
+}
+function resetP2PTable(){
+  localStorage.removeItem('SERGIO_P2P_EDITABLE_DATA');
+  setP2PData(P2P_DEFAULT_DATA);
+  recalcP2PTable();
+  const status = document.getElementById('p2pEditStatus');
+  if(status) status.textContent = 'Datos iniciales restaurados';
+}
+function initP2PEditableTable(){
+  const table = p2pTable();
+  if(!table) return;
+
+  const saved = localStorage.getItem('SERGIO_P2P_EDITABLE_DATA');
+  if(saved){
+    try{ setP2PData(JSON.parse(saved)); }catch(e){ setP2PData(P2P_DEFAULT_DATA); }
+  }else{
+    setP2PData(P2P_DEFAULT_DATA);
+  }
+
+  table.querySelectorAll('.p2p-edit-input, .p2p-edit-select').forEach(el=>{
+    el.addEventListener('focus', ()=>{
+      if(el.classList.contains('p2p-edit-input') && !el.classList.contains('text')){
+        el.value = String(p2pNum(el.value));
+        setTimeout(()=>el.select(),0);
+      }
+    });
+    el.addEventListener('input', ()=>{
+      recalcP2PTable();
+      updateP2PChartsFromTable();
+      const status = document.getElementById('p2pEditStatus');
+      if(status) status.textContent = 'Cambios sin guardar';
+    });
+    el.addEventListener('change', ()=>{
+      recalcP2PTable();
+      updateP2PChartsFromTable();
+      const status = document.getElementById('p2pEditStatus');
+      if(status) status.textContent = 'Cambios sin guardar';
+    });
+    el.addEventListener('blur', ()=>{
+      if(el.classList.contains('p2p-edit-input') && !el.classList.contains('text')){
+        const field = el.dataset.p2pField;
+        const n = p2pNum(el.value);
+        el.value = field === 'tae' ? String(n).replace('.', ',') : p2pFmt(n);
+      }
+      recalcP2PTable();
+    });
+  });
+
+  recalcP2PTable();
+}
+setTimeout(initP2PEditableTable, 500);
+
+
+
+/* ===== P2P CHARTS DINÁMICOS DESDE TABLA EDITABLE - TARTA TOTAL ===== */
+const P2P_CHART_COLORS = ["#3ba7df","#ff9f3a","#ffd166","#55c7bd","#9054e8","#ff4f87","#5bc0eb","#58c9b9","#ffd166","#8e54e9","#ff6b6b","#a879f7","#ffca28","#22c55e","#06b6d4"];
+
+function p2pPolarToCartesian(cx, cy, r, angleDeg){
+  const angleRad = (angleDeg - 90) * Math.PI / 180;
+  return {x: cx + r * Math.cos(angleRad), y: cy + r * Math.sin(angleRad)};
+}
+function p2pDescribeArc(cx, cy, r, startAngle, endAngle){
+  const start = p2pPolarToCartesian(cx, cy, r, endAngle);
+  const end = p2pPolarToCartesian(cx, cy, r, startAngle);
+  const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+  return [
+    "M", cx, cy,
+    "L", start.x, start.y,
+    "A", r, r, 0, largeArcFlag, 0, end.x, end.y,
+    "Z"
+  ].join(" ");
+}
+function updateP2PChartsFromTable(){
+  const data = getP2PData ? getP2PData() : [];
+  if(!data.length) return;
+
+  // Barras TAE ordenadas de mayor a menor
+  const barsBox = document.getElementById('p2pBarsDynamic');
+  if(barsBox){
+    const sorted = [...data].sort((a,b)=>b.tae-a.tae);
+    const maxTAE = Math.max(16, ...sorted.map(d=>d.tae || 0));
+    barsBox.innerHTML = sorted.map(d=>{
+      const width = Math.max(2, Math.min(100, ((d.tae || 0) / maxTAE) * 100));
+      const cls = (d.tae || 0) >= 11 ? '' : ' orange';
+      const taeText = (d.tae || 0).toFixed(1).replace('.', ',') + '%';
+      return `
+        <div class="bar-row">
+          <div>${d.platform || '—'}</div>
+          <div class="bar-track"><div class="bar-fill${cls}" style="width:${width}%"></div></div>
+          <div><b>${taeText}</b></div>
+        </div>`;
+    }).join('');
+  }
+
+  // Tarta completa de distribución por capital
+  const svg = document.getElementById('p2pPieSvg');
+  const legend = document.getElementById('p2pPieLegend');
+  const total = data.reduce((a,b)=>a+(b.capital || 0),0);
+
+  if(svg){
+    if(total <= 0){
+      svg.innerHTML = `<circle cx="310" cy="310" r="230" fill="#eef2f7"></circle>
+        <text x="310" y="310" text-anchor="middle" dominant-baseline="middle" class="p2p-pie-label">Sin datos</text>`;
+    }else{
+      let angle = 0;
+      const slices = [];
+      data.forEach((d,i)=>{
+        const value = d.capital || 0;
+        if(value <= 0) return;
+        const pct = value / total * 100;
+        const start = angle;
+        const end = angle + pct * 3.6;
+        const color = P2P_CHART_COLORS[i % P2P_CHART_COLORS.length];
+
+        slices.push(`<path d="${p2pDescribeArc(310,310,245,start,end)}" fill="${color}" stroke="#ffffff" stroke-width="7"></path>`);
+
+        // Etiquetas dentro solo si hay espacio suficiente
+        if(pct >= 5){
+          const mid = (start + end) / 2;
+          const pos = p2pPolarToCartesian(310,310,155,mid);
+          const pctText = pct.toFixed(1).replace('.', ',') + '%';
+          const name = (d.platform || '').toUpperCase();
+          const small = pct < 8 ? ' small' : '';
+          slices.push(`<text x="${pos.x}" y="${pos.y - 10}" text-anchor="middle" class="p2p-pie-label${small}">${name}</text>`);
+          slices.push(`<text x="${pos.x}" y="${pos.y + 22}" text-anchor="middle" class="p2p-pie-label${small}">${pctText}</text>`);
+        }
+
+        angle = end;
+      });
+      svg.innerHTML = slices.join('');
+    }
+  }
+
+  if(legend){
+    legend.innerHTML = data
+      .filter(d => (d.capital || 0) > 0)
+      .sort((a,b)=>b.capital-a.capital)
+      .map((d,i)=>{
+        const originalIndex = data.indexOf(d);
+        const color = P2P_CHART_COLORS[originalIndex % P2P_CHART_COLORS.length];
+        const pct = total ? d.capital/total*100 : 0;
+        const pctText = pct.toFixed(1).replace('.', ',') + '%';
+        const amount = new Intl.NumberFormat('es-ES',{maximumFractionDigits:0}).format(d.capital) + ' €';
+        return `<div class="p2p-pie-legend-item">
+          <span class="p2p-pie-legend-dot" style="--pie-color:${color}"></span>
+          <span class="p2p-pie-legend-name">${d.platform || '—'}</span>
+          <span class="p2p-pie-legend-pct">${pctText}</span>
+          <span class="p2p-pie-legend-amount">${amount}</span>
+        </div>`;
+      }).join('');
+  }
+}
+
+// Envolver recalcP2PTable para que actualice gráficas siempre
+const _oldRecalcP2PTableCharts = typeof recalcP2PTable === 'function' ? recalcP2PTable : null;
+if(_oldRecalcP2PTableCharts){
+  recalcP2PTable = function(){
+    _oldRecalcP2PTableCharts();
+    updateP2PChartsFromTable();
+  }
+}
+
+setTimeout(updateP2PChartsFromTable, 800);
+
+
+/* ===== P2P FORMULARIO TIPO APP ===== */
+const P2P_FORM_DEFAULT = [
+["Debitum",17203,520,209,"Aum"],["Maclear",1150,152,476,"Red"],["Devon",25669,875,1552,"Man"],["Loanch",19331,72,0,"Red"],["Ventus",10672,563,620,"Man"],["Forest",10389,516,343,"Aum"],["Mintos",110,56,0,"Red"],["Viainvest",1289,61,0,"Red"],["HIVE-5",11248,561,167,"Man"],["Monefit",4954,274,65,"Man"],["Bondora",13021,40,5,"Aum"],["Esketit",18891,2,0,"Man"],["Modena",5000,0,0,"Man"]];
+function formNum(v){return Number(String(v||'').replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.'))||0}
+function formFmt(n){return new Intl.NumberFormat('es-ES',{maximumFractionDigits:0}).format(n)}
+function objectiveClass(v){return v==='Aum'?'aum':v==='Red'?'red':'man'}
+function createP2PPlatformRow(d,i){const [name,cap,inter,cash,obj]=d;return `<div class="p2p-form-row" data-platform-row="${i}"><input class="p2p-form-input" data-form-field="platform" value="${name||''}"><input class="p2p-form-input" data-form-field="capital" inputmode="decimal" value="${formFmt(cap||0)}"><input class="p2p-form-input" data-form-field="interest" inputmode="decimal" value="${formFmt(inter||0)}"><input class="p2p-form-input" data-form-field="cashback" inputmode="decimal" value="${formFmt(cash||0)}"><select class="p2p-form-select ${objectiveClass(obj||'Man')}" data-form-field="objective"><option value="Aum" ${(obj||'Man')==='Aum'?'selected':''}>Aum</option><option value="Red" ${(obj||'Man')==='Red'?'selected':''}>Red</option><option value="Man" ${(obj||'Man')==='Man'?'selected':''}>Man</option></select><div class="p2p-form-weight" data-form-field="weight">0,0%</div><button class="p2p-delete" type="button" onclick="deleteP2PPlatformRow(this)">Eliminar</button></div>`}
+function getP2PFormData(){return [...document.querySelectorAll('#p2pPlatformRows .p2p-form-row')].map(row=>{const get=f=>row.querySelector(`[data-form-field="${f}"]`)?.value||'';return {platform:get('platform'),country:'',capital:formNum(get('capital')),interest:formNum(get('interest')),tae:0,cashback:formNum(get('cashback')),retention:0,pg:formNum(get('interest'))+formNum(get('cashback')),status:get('objective')}})}
+getP2PData=function(){return getP2PFormData()}
+function recalcP2PPlatformForm(){const data=getP2PFormData();const total=data.reduce((a,b)=>a+b.capital,0);document.querySelectorAll('#p2pPlatformRows .p2p-form-row').forEach((row,i)=>{const w=row.querySelector('[data-form-field="weight"]');if(w)w.textContent=(total?data[i].capital/total*100:0).toFixed(1).replace('.',',')+'%';const sel=row.querySelector('.p2p-form-select');if(sel){sel.classList.remove('aum','red','man');sel.classList.add(objectiveClass(sel.value))}});if(typeof updateP2PChartsFromTable==='function')updateP2PChartsFromTable();localStorage.setItem('SERGIO_P2P_CAPITAL_TOTAL',String(total))}
+function bindP2PPlatformRows(){document.querySelectorAll('#p2pPlatformRows .p2p-form-input,#p2pPlatformRows .p2p-form-select').forEach(el=>{el.onfocus=()=>{if(el.dataset.formField!=='platform'&&el.tagName!=='SELECT'){el.value=String(formNum(el.value));setTimeout(()=>el.select(),0)}};el.oninput=()=>{recalcP2PPlatformForm();const s=document.getElementById('p2pEditStatus');if(s)s.textContent='Cambios sin guardar'};el.onchange=el.oninput;el.onblur=()=>{if(el.dataset.formField!=='platform'&&el.tagName!=='SELECT')el.value=formFmt(formNum(el.value));recalcP2PPlatformForm()}})}
+function saveP2PPlatformForm(){localStorage.setItem('SERGIO_P2P_PLATFORM_FORM',JSON.stringify(getP2PFormData().map(d=>[d.platform,d.capital,d.interest,d.cashback,d.status])));recalcP2PPlatformForm();const s=document.getElementById('p2pEditStatus');if(s)s.textContent='✅ Cambios guardados'}
+function resetP2PPlatformForm(){localStorage.removeItem('SERGIO_P2P_PLATFORM_FORM');renderP2PPlatformForm(P2P_FORM_DEFAULT);const s=document.getElementById('p2pEditStatus');if(s)s.textContent='Demo restaurada'}
+function deleteP2PPlatformRow(btn){btn.closest('.p2p-form-row')?.remove();recalcP2PPlatformForm();const s=document.getElementById('p2pEditStatus');if(s)s.textContent='Cambios sin guardar'}
+function addP2PPlatformRow(){const rows=document.getElementById('p2pPlatformRows');if(!rows)return;rows.insertAdjacentHTML('beforeend',createP2PPlatformRow(['Nueva plataforma',0,0,0,'Man'],rows.querySelectorAll('.p2p-form-row').length));bindP2PPlatformRows();recalcP2PPlatformForm()}
+function renderP2PPlatformForm(data){const rows=document.getElementById('p2pPlatformRows');if(!rows)return;rows.innerHTML=data.map((d,i)=>createP2PPlatformRow(d,i)).join('');bindP2PPlatformRows();recalcP2PPlatformForm()}
+function initP2PPlatformForm(){const saved=localStorage.getItem('SERGIO_P2P_PLATFORM_FORM');if(saved){try{renderP2PPlatformForm(JSON.parse(saved))}catch(e){renderP2PPlatformForm(P2P_FORM_DEFAULT)}}else renderP2PPlatformForm(P2P_FORM_DEFAULT)}
+setTimeout(initP2PPlatformForm,650);
+
+
+/* ===== P2P MOVIMIENTOS MENSUALES EDITABLES ===== */
+const P2P_MONTHLY_DEFAULT = [
+  ["Ene",192,603],["Feb",574,2521],["Mar",1018,215],["Abr",1421,81],["May",487,655],["Jun",0,0],
+  ["Jul",0,0],["Ago",0,0],["Sep",0,0],["Oct",0,0],["Nov",0,0],["Dic",0,0]
+];
+
+function monthNum(v){
+  return Number(String(v || '').replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.')) || 0;
+}
+function monthFmt(n){
+  return new Intl.NumberFormat('es-ES', {maximumFractionDigits:0}).format(n);
+}
+function createP2PMonthlyRow(data, index){
+  const [month, interest, cashback] = data;
+  return `
+    <div class="p2p-monthly-row" data-month-row="${index}">
+      <input class="p2p-monthly-input" data-month-field="month" value="${month || ''}">
+      <input class="p2p-monthly-input" data-month-field="interest" inputmode="decimal" value="${monthFmt(interest || 0)}">
+      <input class="p2p-monthly-input" data-month-field="cashback" inputmode="decimal" value="${monthFmt(cashback || 0)}">
+      <div class="p2p-monthly-total" data-month-field="total">0 €</div>
+      <button class="p2p-monthly-delete" type="button" onclick="deleteP2PMonthlyRow(this)">Eliminar</button>
+    </div>`;
+}
+function getP2PMonthlyData(){
+  return [...document.querySelectorAll('#p2pMonthlyRows .p2p-monthly-row')].map(row=>{
+    const get = f => row.querySelector(`[data-month-field="${f}"]`)?.value || '';
+    return [get('month'), monthNum(get('interest')), monthNum(get('cashback'))];
+  });
+}
+function recalcP2PMonthly(){
+  let totalInterest = 0;
+  let totalCashback = 0;
+
+  document.querySelectorAll('#p2pMonthlyRows .p2p-monthly-row').forEach(row=>{
+    const interest = monthNum(row.querySelector('[data-month-field="interest"]')?.value);
+    const cashback = monthNum(row.querySelector('[data-month-field="cashback"]')?.value);
+    const total = interest + cashback;
+    totalInterest += interest;
+    totalCashback += cashback;
+
+    const totalEl = row.querySelector('[data-month-field="total"]');
+    if(totalEl) totalEl.textContent = monthFmt(total) + ' €';
+  });
+
+  const grand = totalInterest + totalCashback;
+  const set = (id, v) => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = monthFmt(v) + ' €';
+  };
+
+  set('p2pMonthlyTotalInterest', totalInterest);
+  set('p2pMonthlyTotalCashback', totalCashback);
+  set('p2pMonthlyGrandTotal', grand);
+
+  localStorage.setItem('SERGIO_P2P_MONTHLY_TOTAL_INTEREST', String(totalInterest));
+  localStorage.setItem('SERGIO_P2P_MONTHLY_TOTAL_CASHBACK', String(totalCashback));
+  localStorage.setItem('SERGIO_P2P_MONTHLY_GRAND_TOTAL', String(grand));
+}
+function bindP2PMonthlyRows(){
+  document.querySelectorAll('#p2pMonthlyRows .p2p-monthly-input').forEach(el=>{
+    el.onfocus = () => {
+      if(el.dataset.monthField !== 'month'){
+        el.value = String(monthNum(el.value));
+        setTimeout(()=>el.select(),0);
+      }
+    };
+    el.oninput = () => {
+      recalcP2PMonthly();
+      const status = document.getElementById('p2pEditStatus');
+      if(status) status.textContent = 'Cambios mensuales sin guardar';
+    };
+    el.onblur = () => {
+      if(el.dataset.monthField !== 'month'){
+        el.value = monthFmt(monthNum(el.value));
+      }
+      recalcP2PMonthly();
+    };
+  });
+}
+function saveP2PMonthly(){
+  localStorage.setItem('SERGIO_P2P_MONTHLY_DATA', JSON.stringify(getP2PMonthlyData()));
+  recalcP2PMonthly();
+}
+function renderP2PMonthly(data){
+  const rows = document.getElementById('p2pMonthlyRows');
+  if(!rows) return;
+  rows.innerHTML = data.map((d,i)=>createP2PMonthlyRow(d,i)).join('');
+  bindP2PMonthlyRows();
+  recalcP2PMonthly();
+}
+function resetP2PMonthly(){
+  localStorage.removeItem('SERGIO_P2P_MONTHLY_DATA');
+  renderP2PMonthly(P2P_MONTHLY_DEFAULT);
+}
+function deleteP2PMonthlyRow(btn){
+  btn.closest('.p2p-monthly-row')?.remove();
+  recalcP2PMonthly();
+}
+function addP2PMonthlyRow(){
+  const rows = document.getElementById('p2pMonthlyRows');
+  if(!rows) return;
+  rows.insertAdjacentHTML('beforeend', createP2PMonthlyRow(['Nuevo mes',0,0], rows.querySelectorAll('.p2p-monthly-row').length));
+  bindP2PMonthlyRows();
+  recalcP2PMonthly();
+}
+function initP2PMonthly(){
+  const saved = localStorage.getItem('SERGIO_P2P_MONTHLY_DATA');
+  if(saved){
+    try{ renderP2PMonthly(JSON.parse(saved)); }
+    catch(e){ renderP2PMonthly(P2P_MONTHLY_DEFAULT); }
+  }else{
+    renderP2PMonthly(P2P_MONTHLY_DEFAULT);
+  }
+}
+
+// Ampliamos guardar/reset general de P2P si existen
+const _oldSaveP2PPlatformFormMonthly = typeof saveP2PPlatformForm === 'function' ? saveP2PPlatformForm : null;
+if(_oldSaveP2PPlatformFormMonthly){
+  saveP2PPlatformForm = function(){
+    _oldSaveP2PPlatformFormMonthly();
+    saveP2PMonthly();
+    const status = document.getElementById('p2pEditStatus');
+    if(status) status.textContent = '✅ Cambios guardados';
+  }
+}
+const _oldResetP2PPlatformFormMonthly = typeof resetP2PPlatformForm === 'function' ? resetP2PPlatformForm : null;
+if(_oldResetP2PPlatformFormMonthly){
+  resetP2PPlatformForm = function(){
+    _oldResetP2PPlatformFormMonthly();
+    resetP2PMonthly();
+  }
+}
+
+setTimeout(initP2PMonthly, 800);
+
+
+/* ===== KPIS SUPERIORES P2P DINÁMICOS ===== */
+function p2pKpiFmt(n){
+  return new Intl.NumberFormat('es-ES', {maximumFractionDigits:0}).format(n) + ' €';
+}
+function updateP2PTopKPIs(){
+  let patrimonio = 0;
+  let monthlyGrand = 0;
+  let activeMonths = 0;
+
+  if(typeof getP2PFormData === 'function'){
+    const platforms = getP2PFormData();
+    patrimonio = platforms.reduce((a,b)=>a+(b.capital || 0),0);
+  }else if(typeof getP2PData === 'function'){
+    const platforms = getP2PData();
+    patrimonio = platforms.reduce((a,b)=>a+(b.capital || 0),0);
+  }
+
+  if(typeof getP2PMonthlyData === 'function'){
+    const months = getP2PMonthlyData();
+    const totals = months.map(m => (Number(m[1]) || 0) + (Number(m[2]) || 0));
+    monthlyGrand = totals.reduce((a,b)=>a+b,0);
+    activeMonths = totals.filter(v=>v>0).length;
+  }else{
+    monthlyGrand = Number(localStorage.getItem('SERGIO_P2P_MONTHLY_GRAND_TOTAL') || 0);
+    activeMonths = 5;
+  }
+
+  const incomeMean = activeMonths ? monthlyGrand / activeMonths : 0;
+  const annualProjection = incomeMean * 12;
+  const estimatedReturn = patrimonio ? (annualProjection / patrimonio * 100) : 0;
+
+  const set = (id, value) => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = value;
+  };
+
+  set('p2pKpiPatrimonio', p2pKpiFmt(patrimonio));
+  set('p2pKpiRetornos', p2pKpiFmt(monthlyGrand));
+  set('p2pKpiRentabilidad', estimatedReturn.toFixed(1).replace('.', ',') + '%');
+  set('p2pKpiIngresoMedio', p2pKpiFmt(incomeMean));
+  set('p2pKpiProyeccion', p2pKpiFmt(annualProjection));
+}
+
+// Enlazar con recalculados existentes
+const _oldRecalcP2PPlatformFormKPI = typeof recalcP2PPlatformForm === 'function' ? recalcP2PPlatformForm : null;
+if(_oldRecalcP2PPlatformFormKPI){
+  recalcP2PPlatformForm = function(){
+    _oldRecalcP2PPlatformFormKPI();
+    updateP2PTopKPIs();
+  }
+}
+
+const _oldRecalcP2PMonthlyKPI = typeof recalcP2PMonthly === 'function' ? recalcP2PMonthly : null;
+if(_oldRecalcP2PMonthlyKPI){
+  recalcP2PMonthly = function(){
+    _oldRecalcP2PMonthlyKPI();
+    updateP2PTopKPIs();
+  }
+}
+
+setTimeout(updateP2PTopKPIs, 1000);
+setTimeout(updateP2PTopKPIs, 1800);
+
+
+/* ===== ROSCO DINÁMICO P2P EN LUGAR DE TAE ===== */
+function donutPolar(cx, cy, r, angleDeg){
+  const angleRad = (angleDeg - 90) * Math.PI / 180;
+  return {x: cx + r * Math.cos(angleRad), y: cy + r * Math.sin(angleRad)};
+}
+function donutArc(cx, cy, rOuter, rInner, startAngle, endAngle){
+  const outerStart = donutPolar(cx, cy, rOuter, endAngle);
+  const outerEnd = donutPolar(cx, cy, rOuter, startAngle);
+  const innerStart = donutPolar(cx, cy, rInner, startAngle);
+  const innerEnd = donutPolar(cx, cy, rInner, endAngle);
+  const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+  return [
+    "M", outerStart.x, outerStart.y,
+    "A", rOuter, rOuter, 0, largeArcFlag, 0, outerEnd.x, outerEnd.y,
+    "L", innerStart.x, innerStart.y,
+    "A", rInner, rInner, 0, largeArcFlag, 1, innerEnd.x, innerEnd.y,
+    "Z"
+  ].join(" ");
+}
+function updateP2PDonutCapital(){
+  const data = typeof getP2PData === 'function' ? getP2PData() : [];
+  const svg = document.getElementById('p2pDonutCapitalSvg');
+  const legend = document.getElementById('p2pDonutCapitalLegend');
+  if(!svg) return;
+
+  const total = data.reduce((a,b)=>a+(b.capital||0),0);
+  const colors = typeof P2P_CHART_COLORS !== 'undefined' ? P2P_CHART_COLORS : ["#3b82f6","#10b981","#f59e0b","#8b5cf6","#ef4444","#14b8a6","#fb923c","#d946ef","#22c55e","#60a5fa","#a78bfa","#f87171","#facc15"];
+
+  if(total <= 0){
+    svg.innerHTML = `<circle cx="260" cy="260" r="155" fill="#eef2f7"></circle>
+      <text x="260" y="260" text-anchor="middle" dominant-baseline="middle" class="p2p-donut-center">Sin datos</text>`;
+    if(legend) legend.innerHTML = '';
+    return;
+  }
+
+  let angle = 0;
+  let parts = [];
+  data.forEach((d,i)=>{
+    const val = d.capital || 0;
+    if(val <= 0) return;
+    const pct = val / total * 100;
+    const start = angle;
+    const end = angle + pct * 3.6;
+    const color = colors[i % colors.length];
+
+    parts.push(`<path d="${donutArc(260,260,190,105,start,end)}" fill="${color}" stroke="#ffffff" stroke-width="5"></path>`);
+
+    if(pct >= 7){
+      const mid = (start+end)/2;
+      const pos = donutPolar(260,260,147,mid);
+      parts.push(`<text x="${pos.x}" y="${pos.y}" text-anchor="middle" dominant-baseline="middle" style="font-size:16px;font-weight:950;fill:#101827;paint-order:stroke;stroke:#fff;stroke-width:4px">${pct.toFixed(1).replace('.', ',')}%</text>`);
+    }
+    angle = end;
+  });
+
+  parts.push(`<text x="260" y="250" text-anchor="middle" class="p2p-donut-center">${new Intl.NumberFormat('es-ES',{maximumFractionDigits:0}).format(total)} €</text>`);
+  parts.push(`<text x="260" y="280" text-anchor="middle" class="p2p-donut-sub">Capital P2P</text>`);
+  svg.innerHTML = parts.join('');
+
+  if(legend){
+    legend.innerHTML = data.filter(d=>(d.capital||0)>0).map((d,i)=>`<span style="--c:${colors[i % colors.length]}">${d.platform}</span>`).join('');
+  }
+}
+
+const _oldUpdateP2PChartsDonutOnly = typeof updateP2PChartsFromTable === 'function' ? updateP2PChartsFromTable : null;
+if(_oldUpdateP2PChartsDonutOnly){
+  updateP2PChartsFromTable = function(){
+    _oldUpdateP2PChartsDonutOnly();
+    updateP2PDonutCapital();
+  }
+}
+setTimeout(updateP2PDonutCapital, 900);
+setTimeout(updateP2PDonutCapital, 1800);
+
+
+/* ===== ROSCO IZQUIERDA + LISTADO DERECHA DINÁMICO ===== */
+const P2P_NEW_COLORS = ["#3ba7df","#ff4f87","#ff9f3a","#ffd166","#55c7bd","#9054e8","#ec4899","#38bdf8","#facc15","#14b8a6","#a855f7","#fb7185","#fbbf24","#22c55e"];
+
+function piePoint(cx, cy, r, angleDeg){
+  const rad = (angleDeg - 90) * Math.PI / 180;
+  return {x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad)};
+}
+function pieSlicePath(cx, cy, r, startAngle, endAngle){
+  const start = piePoint(cx, cy, r, endAngle);
+  const end = piePoint(cx, cy, r, startAngle);
+  const large = endAngle - startAngle > 180 ? 1 : 0;
+  return `M ${cx} ${cy} L ${start.x} ${start.y} A ${r} ${r} 0 ${large} 0 ${end.x} ${end.y} Z`;
+}
+function updateP2PLeftPieAndRightList(){
+  const data = typeof getP2PData === 'function' ? getP2PData() : [];
+  const svg = document.getElementById('p2pBigPieSvg');
+  const list = document.getElementById('p2pRightDistributionList');
+  if(!svg || !list || !data.length) return;
+
+  const clean = data.filter(d => (d.capital || 0) > 0);
+  const total = clean.reduce((a,b)=>a+b.capital,0);
+  if(total <= 0){
+    svg.innerHTML = `<circle cx="350" cy="370" r="220" fill="#eef2f7"></circle>
+      <text x="350" y="370" text-anchor="middle" dominant-baseline="middle" class="p2p-big-pie-label">Sin datos</text>`;
+    list.innerHTML = '';
+    return;
+  }
+
+  let angle = 0;
+  const parts = [];
+  clean.forEach((d,i)=>{
+    const pct = d.capital / total * 100;
+    const start = angle;
+    const end = angle + pct * 3.6;
+    const color = P2P_NEW_COLORS[i % P2P_NEW_COLORS.length];
+
+    parts.push(`<path d="${pieSlicePath(350,370,235,start,end)}" fill="${color}" stroke="#ffffff" stroke-width="8"></path>`);
+
+    // Etiquetas internas como la referencia
+    if(pct >= 7){
+      const mid = (start + end) / 2;
+      const pos = piePoint(350,370,150,mid);
+      const small = pct < 8.5 ? ' small' : '';
+      const name = String(d.platform || '').toUpperCase();
+      const pctText = pct.toFixed(1).replace('.', ',') + '%';
+      parts.push(`<text x="${pos.x}" y="${pos.y - 14}" text-anchor="middle" class="p2p-big-pie-label${small}">${name}</text>`);
+      parts.push(`<text x="${pos.x}" y="${pos.y + 22}" text-anchor="middle" class="p2p-big-pie-label${small}">${pctText}</text>`);
+    }
+
+    angle = end;
+  });
+  svg.innerHTML = parts.join('');
+
+  const sorted = [...clean].sort((a,b)=>b.capital-a.capital);
+  list.innerHTML = sorted.map(d=>{
+    const originalIndex = clean.indexOf(d);
+    const color = P2P_NEW_COLORS[originalIndex % P2P_NEW_COLORS.length];
+    const pct = total ? d.capital / total * 100 : 0;
+    const pctText = pct.toFixed(1).replace('.', ',') + '%';
+    const amount = new Intl.NumberFormat('es-ES',{maximumFractionDigits:0}).format(d.capital) + ' €';
+    return `<div class="p2p-right-list-item">
+      <span class="p2p-right-list-dot" style="--pie-color:${color}"></span>
+      <span class="p2p-right-list-name">${d.platform || '—'}</span>
+      <span class="p2p-right-list-pct">${pctText}</span>
+      <span class="p2p-right-list-amount">${amount}</span>
+    </div>`;
+  }).join('');
+}
+
+// Anular gráfica anterior y refrescar con el nuevo layout
+const _oldUpdateP2PChartsNewLayout = typeof updateP2PChartsFromTable === 'function' ? updateP2PChartsFromTable : null;
+updateP2PChartsFromTable = function(){
+  if(_oldUpdateP2PChartsNewLayout) {
+    try { _oldUpdateP2PChartsNewLayout(); } catch(e) {}
+  }
+  updateP2PLeftPieAndRightList();
+};
+
+setTimeout(updateP2PLeftPieAndRightList, 800);
+setTimeout(updateP2PLeftPieAndRightList, 1800);
+
+
+/* ===== CALCULADORA INTERÉS SIMPLE Y COMPUESTO ===== */
+function calcNum(v){
+  return Number(String(v || '').replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.')) || 0;
+}
+function calcFmt(n){
+  return new Intl.NumberFormat('es-ES', {maximumFractionDigits:0}).format(n) + ' €';
+}
+function calcSet(id, txt){
+  const el = document.getElementById(id);
+  if(el) el.textContent = txt;
+}
+function calcularInteresPro(){
+  const capitalInicial = calcNum(document.getElementById('calcCapitalInicial')?.value);
+  const aportacion = calcNum(document.getElementById('calcAportacionMensual')?.value);
+  const interesAnual = calcNum(document.getElementById('calcInteresAnual')?.value);
+  const anos = Math.max(0, calcNum(document.getElementById('calcAnos')?.value));
+
+  const meses = Math.round(anos * 12);
+  const rAnual = interesAnual / 100;
+  const rMensual = rAnual / 12;
+
+  const capitalAportado = capitalInicial + aportacion * meses;
+  const simple = capitalInicial * (1 + rAnual * anos) + aportacion * meses;
+  let compuesto = capitalInicial;
+
+  const simpleSeries = [];
+  const compoundSeries = [];
+  for(let y=0; y<=anos; y++){
+    const m = Math.round(y*12);
+    const simpleY = capitalInicial * (1 + rAnual * y) + aportacion * m;
+    let compY = capitalInicial;
+    for(let i=1; i<=m; i++){
+      compY = compY * (1 + rMensual) + aportacion;
+    }
+    simpleSeries.push(simpleY);
+    compoundSeries.push(compY);
+  }
+
+  for(let i=1; i<=meses; i++){
+    compuesto = compuesto * (1 + rMensual) + aportacion;
+  }
+
+  const interesesSimple = simple - capitalAportado;
+  const interesesCompuesto = compuesto - capitalAportado;
+  const diferencia = compuesto - simple;
+  const ingresoMedio = meses ? compuesto / meses : 0;
+
+  calcSet('calcCapitalAportado', calcFmt(capitalAportado));
+  calcSet('calcInteresSimple', calcFmt(simple));
+  calcSet('calcInteresSimpleSub', 'Intereses: ' + calcFmt(interesesSimple));
+  calcSet('calcInteresCompuesto', calcFmt(compuesto));
+  calcSet('calcInteresCompuestoSub', 'Intereses: ' + calcFmt(interesesCompuesto));
+  calcSet('calcDiferencia', calcFmt(diferencia));
+  calcSet('calcIngresoMedio', calcFmt(ingresoMedio));
+  calcSet('calcAnosResultado', anos.toFixed(0) + ' años');
+
+  dibujarGraficoCalculadora(simpleSeries, compoundSeries, anos);
+}
+function dibujarGraficoCalculadora(simpleSeries, compoundSeries, anos){
+  const svg = document.getElementById('calcChartSvg');
+  if(!svg) return;
+
+  const all = [...simpleSeries, ...compoundSeries];
+  const min = Math.min(...all);
+  const max = Math.max(...all);
+  const pad = Math.max((max-min)*.12, 10000);
+  const yMin = Math.max(0, min-pad);
+  const yMax = max+pad;
+
+  const W=1200, H=500, L=75, R=30, T=35, B=55;
+  const plotW = W-L-R;
+  const plotH = H-T-B;
+  const n = simpleSeries.length;
+
+  const x = i => L + (plotW * i / Math.max(1,n-1));
+  const y = v => T + (yMax-v)/(yMax-yMin)*plotH;
+
+  let grid = '';
+  for(let i=0;i<=5;i++){
+    const yy = T + plotH*i/5;
+    const val = yMax - (yMax-yMin)*i/5;
+    grid += `<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="#d1d5db" stroke-width="1"/>`;
+    grid += `<text x="5" y="${yy+5}" fill="#667085" font-size="14">${calcFmt(val)}</text>`;
+  }
+  for(let i=0;i<n;i++){
+    const xx = x(i);
+    grid += `<line x1="${xx}" y1="${T}" x2="${xx}" y2="${H-B}" stroke="#e5e7eb" stroke-width="1"/>`;
+    grid += `<text x="${xx}" y="${H-18}" text-anchor="middle" fill="#667085" font-size="14">${i===0?'Inicio':i+' años'}</text>`;
+  }
+
+  const path = arr => arr.map((v,i)=>(i?'L':'M')+x(i)+','+y(v)).join(' ');
+  const dots = (arr,color) => arr.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="#fff" stroke="${color}" stroke-width="3"/>`).join('');
+
+  svg.innerHTML = `
+    ${grid}
+    <path d="${path(simpleSeries)}" fill="none" stroke="#3ba7df" stroke-width="4"/>
+    ${dots(simpleSeries,'#3ba7df')}
+    <path d="${path(compoundSeries)}" fill="none" stroke="#ff5c8a" stroke-width="4"/>
+    ${dots(compoundSeries,'#ff5c8a')}
+  `;
+}
+function initCalculadoraPro(){
+  ['calcCapitalInicial','calcAportacionMensual','calcInteresAnual','calcAnos'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('focus',()=>{ el.value = String(calcNum(el.value)); setTimeout(()=>el.select(),0); });
+    el.addEventListener('input', calcularInteresPro);
+    el.addEventListener('blur',()=>{
+      const n = calcNum(el.value);
+      el.value = id==='calcInteresAnual' || id==='calcAnos' ? String(n).replace('.', ',') : new Intl.NumberFormat('es-ES',{maximumFractionDigits:0}).format(n);
+      calcularInteresPro();
+    });
+  });
+  calcularInteresPro();
+}
+setTimeout(initCalculadoraPro, 600);
+
+
+/* ===== RESUMEN: QUESO COMPLETO Y BONOS MORADO ===== */
+function aplicarQuesoResumenBonosMorado(){
+  const donut = document.querySelector('.donut');
+  if(!donut) return;
+
+  // El centro queda oculto por CSS: ahora es gráfico de quesos completo.
+  // Bonos siempre morado.
+  const root = document.documentElement;
+  root.style.setProperty('--bonos', '#8b5cf6');
+
+  // Si existe leyenda de bonos, forzamos punto morado.
+  document.querySelectorAll('.legend-row, .legend li, .asset-row').forEach(row=>{
+    if((row.textContent || '').toLowerCase().includes('bonos')){
+      const dot = row.querySelector('.dot, .legend-dot, span:first-child');
+      if(dot) dot.style.background = '#8b5cf6';
+    }
+  });
+
+  // Si hay labels de porcentajes dentro, recolocamos ligeramente para gráfico completo.
+  const labels = [
+    ['pctRV','70%','34%'],
+    ['pctP2P','24%','51%'],
+    ['pctCripto','39%','72%'],
+    ['pctMP','19%','62%'],
+    ['pctBonos','18%','36%'],
+    ['pctCash','43%','18%']
+  ];
+  labels.forEach(([id,left,top])=>{
+    const el = document.getElementById(id);
+    if(el){
+      el.style.left = left;
+      el.style.top = top;
+    }
+  });
+}
+setTimeout(aplicarQuesoResumenBonosMorado, 400);
+setTimeout(aplicarQuesoResumenBonosMorado, 1200);
+
+</script>
+</body>
+</html>
