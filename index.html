@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard Patrimonio Sergio</title>
+<style>
+:root{--bg:#f3f7fa;--card:#fff;--ink:#102238;--muted:#607487;--line:#dde7ef;--teal:#0b7368;--teal2:#00433d;--rv:#006dff;--cf:#ff3598;--crypto:#ff7900;--mp:#ffd21e;--cash:#22b62b;--red:#ec1717;--green:#128a25;--silver:#9b9b9b}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--ink)}
+.wrap{max-width:1360px;margin:auto;padding:20px}.hero{background:linear-gradient(135deg,#174d43,#003c37);color:#fff;border-radius:14px;padding:28px 34px;display:flex;justify-content:space-between;align-items:center;gap:22px;box-shadow:0 14px 28px #0b2e2a25}.brand{display:flex;gap:22px;align-items:center}.logo{width:74px;height:74px;border-radius:50%;background:conic-gradient(var(--cf) 0 25%,var(--rv) 25% 50%,#55b947 50% 75%,var(--mp) 75% 100%);box-shadow:inset 0 0 0 2px #fff3}.hero h1{font-size:46px;margin:0;letter-spacing:2px}.hero p{font-size:20px;margin:8px 0 0;opacity:.88}.totalBox{border:1px solid #ffffff9a;border-radius:12px;padding:18px 28px;min-width:330px;text-align:center}.totalBox label{font-size:18px;font-weight:900;display:block;margin-bottom:10px}.totalLine{display:flex;align-items:center;gap:12px;justify-content:center}.totalInput{width:210px;text-align:right;background:#ffffff10;border:1px solid #ffffffc0;color:#fff;border-radius:8px;padding:9px 12px;font-size:38px;font-weight:900}.totalInput:focus,.pctInput:focus{outline:none;box-shadow:0 0 0 3px #168cff33}.euro{font-size:30px;font-weight:900}.hint{font-size:14px;opacity:.82;margin-top:8px}.grid{display:grid;gap:18px;margin-top:18px}.grid2{grid-template-columns:1.12fr .88fr}.cardsGrid{grid-template-columns:repeat(2,1fr)}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 7px 22px #12304810}.card h2{margin:0 0 14px;color:#134e47;font-size:24px}.split{display:grid;grid-template-columns:270px 1fr;gap:24px;align-items:center}.donut{width:260px;height:260px;border-radius:50%;display:grid;place-items:center;position:relative;margin:auto}.donut:after{content:"";position:absolute;width:48%;height:48%;border-radius:50%;background:#fff;box-shadow:inset 0 0 16px #d5dde6}.donutText{position:relative;z-index:2;text-align:center;font-weight:900;font-size:22px}.donutText span{display:block;font-size:13px;margin-top:5px}.globalRows .row{display:grid;grid-template-columns:1fr 145px 80px;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin:8px 0;background:#fff}.label{color:#fff;font-weight:900;padding:14px 16px}.val,.pct{font-weight:900;text-align:right;padding:14px 12px}.rv{background:linear-gradient(90deg,var(--rv),#1789ff)}.cf{background:linear-gradient(90deg,var(--cf),#ff6ab8)}.crypto{background:linear-gradient(90deg,var(--crypto),#ffa000)}.mp{background:linear-gradient(90deg,var(--mp),#ffea55);color:#102238}.cash{background:linear-gradient(90deg,var(--cash),#64cf58)}.total{background:linear-gradient(90deg,var(--teal2),var(--teal));color:#fff}.summaryItem{display:grid;grid-template-columns:56px 1fr auto;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin:9px 0}.icon{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:23px;font-weight:900}.amount{text-align:right;font-weight:900}.amount small{display:block;font-weight:800;color:#20384f;margin-top:3px}.sectionTitle{display:flex;justify-content:space-between;align-items:center;color:#fff;font-size:24px;font-weight:900;padding:14px 18px;border-radius:8px;margin:-2px -2px 18px}.subWrap{display:grid;grid-template-columns:255px 1fr;gap:20px;align-items:center}.miniTable{width:100%;border-collapse:collapse;font-size:16px}.miniTable th,.miniTable td{border-bottom:1px solid var(--line);padding:10px;text-align:right}.miniTable th:first-child,.miniTable td:first-child{text-align:left}.miniTable th{font-size:13px;color:#102238}.dot{display:inline-block;width:13px;height:13px;border-radius:50%;margin-right:8px}.pctInput{width:76px;border:1.5px solid #c7d4df;border-radius:7px;padding:7px 8px;text-align:right;font-size:16px;font-weight:850;color:var(--ink);background:white}.pctCell{white-space:nowrap}.badge{display:inline-block;min-width:88px;text-align:center;border-radius:7px;padding:8px 10px;font-weight:900;background:#eefaf0;color:var(--green);border:1px solid #a7e0b0}.badge.bad{background:#fff1f1;color:var(--red);border-color:#ff8f8f}.warn{margin-top:12px;color:var(--red);font-weight:900;font-size:14px}.ok{margin-top:12px;color:#425a70;font-size:14px}.toolbar{display:flex;justify-content:flex-end;gap:10px;margin:18px 0}.btn{border:0;border-radius:8px;padding:11px 15px;font-weight:900;color:white;background:var(--teal);cursor:pointer}.btn.secondary{background:#12344b}.footInfo{text-align:center;color:#4c657b;margin:8px 0 4px;font-size:14px}@media(max-width:1050px){.grid2,.cardsGrid{grid-template-columns:1fr}.hero{flex-direction:column;align-items:flex-start}.hero h1{font-size:36px}.totalBox{width:100%}.split,.subWrap{grid-template-columns:1fr}.donut{width:230px;height:230px}.globalRows .row{grid-template-columns:1fr 120px 70px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero"><div class="brand"><div class="logo"></div><div><h1>DASHBOARD PATRIMONIO</h1><p>Distribución global de activos y subcarteras</p></div></div><div class="totalBox"><label>PATRIMONIO TOTAL</label><div class="totalLine"><input id="totalInput" class="totalInput" inputmode="decimal"><span class="euro">€</span></div><div class="hint">Haz clic en el valor para editar</div></div></header>
+<section class="grid grid2"><div class="card"><h2>DISTRIBUCIÓN GLOBAL</h2><div class="split"><div id="globalDonut" class="donut"></div><div id="globalRows" class="globalRows"></div></div></div><div class="card"><h2>RESUMEN GLOBAL</h2><div id="summaryRows"></div></div></section>
+<section id="cards" class="grid cardsGrid"></section>
+<div class="toolbar"><button class="btn" onclick="saveData()">Guardar cambios</button><button class="btn secondary" onclick="resetData()">Restaurar datos</button></div><p class="footInfo">Edita el patrimonio total y los porcentajes de cada subcartera. Si una suma supera el 100 %, se marcará en rojo.</p>
+</div>
+<script>
+const KEY='dashboard_patrimonio_sergio_v4';
+const defaults={total:150000,global:[
+ {id:'rv',name:'RENTA VARIABLE',pct:50,color:'#006dff',icon:'↗',items:[['ACWI',60,'#0050c8'],['ETFs',20,'#1689ff'],['ACCIONES',20,'#75a7f5']]},
+ {id:'cf',name:'CROWDFUNDING',pct:25,color:'#ff3598',icon:'👥',items:[['BONDORA',20,'#fff144'],['DEBITUM',20,'#ff3598'],['DEVON',20,'#ef1717'],['ESKETIT',20,'#25aee7'],['PROMOCIONES',20,'#28bd26']]},
+ {id:'crypto',name:'CRIPTOMONEDAS',pct:15,color:'#ff7900',icon:'₿',items:[['BITCOIN',60,'#ff7200'],['ETHEREUM',25,'#ff8615'],['XRP',5,'#ffae15'],['SOLANA',5,'#ffd326'],['BINANCE',5,'#ffef4a']]},
+ {id:'mp',name:'MATERIAS PRIMAS',pct:10,color:'#ffd21e',icon:'Au',items:[['ORO',70,'#ffd21e'],['PLATA',35,'#9b9b9b']]},
+ {id:'cash',name:'EFECTIVO',pct:0,color:'#22b62b',icon:'€',items:[]}
+]};
+let data;
+function load(){try{data=JSON.parse(localStorage.getItem(KEY))||structuredClone(defaults)}catch(e){data=structuredClone(defaults)} render()}
+const parseNum=v=>Number(String(v).replace(/\./g,'').replace(',','.').replace(/[^0-9.\-]/g,''))||0;
+const euro=n=>new Intl.NumberFormat('es-ES',{maximumFractionDigits:0}).format(n)+' €';
+const plain=n=>new Intl.NumberFormat('es-ES',{maximumFractionDigits:0}).format(n);
+function conic(parts){let a=0;return 'conic-gradient('+parts.map(p=>{let s=a;a+=p.pct;return `${p.color} ${s}% ${a}%`}).join(',')+')'}
+function calcCat(c){return data.total*c.pct/100}
+function calcItem(cat,it){return calcCat(cat)*it[1]/100}
+function subTotalPct(c){return c.items.reduce((s,it)=>s+Number(it[1]||0),0)}
+function render(){
+ document.getElementById('totalInput').value=plain(data.total);
+ const active=data.global.filter(c=>c.pct>0);
+ document.getElementById('globalDonut').style.background=conic(active.map(c=>({pct:c.pct,color:c.color})));
+ document.getElementById('globalDonut').innerHTML=`<div class="donutText">${euro(data.total)}<span>TOTAL</span></div>`;
+ document.getElementById('globalRows').innerHTML=data.global.map(c=>`<div class="row"><div class="label ${c.id}">${c.name}</div><div class="val">${euro(calcCat(c))}</div><div class="pct">${c.pct} %</div></div>`).join('')+`<div class="row total"><div class="label total">TOTAL</div><div class="val">${euro(data.total)}</div><div class="pct">100 %</div></div>`;
+ document.getElementById('summaryRows').innerHTML=data.global.map(c=>`<div class="summaryItem"><div class="icon" style="background:${c.color};color:${c.id==='mp'?'#fff':'#fff'}">${c.icon}</div><b>${c.name}</b><div class="amount">${euro(calcCat(c))}<small>${c.pct} %</small></div></div>`).join('')+`<div class="summaryItem total"><b style="grid-column:1/3">TOTAL PATRIMONIO</b><div class="amount">${euro(data.total)}<small style="color:white">100 %</small></div></div>`;
+ document.getElementById('cards').innerHTML=data.global.filter(c=>c.items.length).map(cardHtml).join('');
+}
+function cardHtml(c){const catAmt=calcCat(c), totalPct=subTotalPct(c), bad=totalPct>100, subAmt=catAmt*totalPct/100; const parts=c.items.map(it=>({pct:Number(it[1]),color:it[2]}));
+ return `<div class="card"><div class="sectionTitle ${c.id}" style="background:linear-gradient(90deg,${c.color},${c.id==='mp'?'#ffe95a':c.color})"><span>${c.name}</span><span>${euro(subAmt)} | ${c.pct} %</span></div><div class="subWrap"><div class="donut" style="background:${conic(parts)}"><div class="donutText">${euro(subAmt)}<span>TOTAL</span></div></div><div><table class="miniTable"><thead><tr><th>ACTIVO</th><th>IMPORTE</th><th>%</th></tr></thead><tbody>${c.items.map((it,i)=>`<tr><td><span class="dot" style="background:${it[2]}"></span>${it[0]}</td><td>${euro(calcItem(c,it))}</td><td class="pctCell"><input class="pctInput" type="number" min="0" step="1" value="${it[1]}" oninput="updatePct('${c.id}',${i},this.value)"> %</td></tr>`).join('')}<tr><td><b>TOTAL</b></td><td><b>${euro(subAmt)}</b></td><td><span class="badge ${bad?'bad':''}">${totalPct} %</span></td></tr></tbody></table>${bad?'<div class="warn">⚠ La suma supera el 100 %. Revisa los porcentajes.</div>':'<div class="ok">ⓘ La suma debe ser igual a 100 %.</div>'}</div></div></div>`}
+function updatePct(id,i,v){let c=data.global.find(x=>x.id===id); c.items[i][1]=parseNum(v); render()}
+document.getElementById('totalInput').addEventListener('input',e=>{data.total=parseNum(e.target.value);render()});
+document.getElementById('totalInput').addEventListener('blur',e=>{e.target.value=plain(data.total)});
+function saveData(){localStorage.setItem(KEY,JSON.stringify(data));alert('Cambios guardados')}
+function resetData(){localStorage.removeItem(KEY);data=structuredClone(defaults);render()}
+load();
+</script>
+</body>
+</html>
